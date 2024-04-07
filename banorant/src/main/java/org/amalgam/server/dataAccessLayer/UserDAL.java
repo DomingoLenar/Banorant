@@ -50,16 +50,4 @@ public class UserDAL {
             return -1;
         }
     }
-
-    public void createUser(String username, String password) {
-        try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO user (username, password) VALUES (?,?)");
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            stmt.execute();
-            System.out.println("success");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
