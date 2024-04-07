@@ -1,6 +1,6 @@
 package org.amalgam.server.dataAccessLayer;
 
-import org.amalgam.server.models.User;
+import org.amalgam.utils.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,4 +51,15 @@ public class UserDAL {
         }
     }
 
+    public void createUser(String username, String password) {
+        try(Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO user (username, password) VALUES (?,?)");
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.execute();
+            System.out.println("success");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

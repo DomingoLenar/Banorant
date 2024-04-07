@@ -5,10 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseUtil {
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/insertDBName";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "admin";
-
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/db_banorant?user=root&password";
     private static Connection connection;
 
     private DatabaseUtil() {}
@@ -16,8 +13,8 @@ public class DatabaseUtil {
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             // Create a new connection if it doesn't exist or is closed
-            connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-            System.out.println("\nnew Connection to database 🎁:" + connection);
+            connection = DriverManager.getConnection(JDBC_URL);
+            System.out.println("\nnew Connection to database:" + connection);
         }
         return connection;
     }

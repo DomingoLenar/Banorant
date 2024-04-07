@@ -1,16 +1,23 @@
-package org.amalgam.server.services;
+package org.amalgam.utils.services;
+
+import org.amalgam.server.dataAccessLayer.UserDAL;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class UserServiceImpl extends UnicastRemoteObject implements UserService, Serializable {
+    private UserDAL userDAL;
     public UserServiceImpl() throws RemoteException {
+        super();
+        this.userDAL = new UserDAL();
     }
 
+    // crud oper in dbms
     @Override
     public boolean createUser(String username, String password) throws RemoteException {
-        return false;
+        userDAL.createUser(username, password);
+        return true;
     }
 
     @Override

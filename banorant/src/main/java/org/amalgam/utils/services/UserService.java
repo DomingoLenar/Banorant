@@ -1,4 +1,4 @@
-package org.amalgam.server.services;
+package org.amalgam.utils.services;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

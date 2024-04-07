@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/banorant/banorant.iml" filepath="$PROJECT_DIR$/banorant/banorant.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/informanaproto.iml" filepath="$PROJECT_DIR$/.idea/informanaproto.iml" />
     </modules>
   </component>

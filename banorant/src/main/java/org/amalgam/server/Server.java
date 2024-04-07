@@ -1,8 +1,8 @@
 package org.amalgam.server;
 
-import org.amalgam.server.services.AuthenticationServiceImpl;
-import org.amalgam.server.services.UserService;
-import org.amalgam.server.services.UserServiceImpl;
+import org.amalgam.utils.services.AuthenticationServiceImpl;
+import org.amalgam.utils.services.UserService;
+import org.amalgam.utils.services.UserServiceImpl;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

@@ -1,4 +1,4 @@
-package org.amalgam.server.models;
+package org.amalgam.utils.models;
 
 import java.io.Serializable;
 
@@ -10,6 +10,11 @@ public class User implements Serializable {
 
     public User(int userID, String username, String password) {
         this.userID = userID;
+        this.username = username;
+        this.password = password;
+//        this.role = null;
+    }
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
 //        this.role = null;
