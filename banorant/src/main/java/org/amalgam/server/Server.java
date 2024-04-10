@@ -14,6 +14,7 @@ public class Server {
         try {
             UserService userService = new UserServiceImpl();
             AuthenticationServiceImpl authService = new AuthenticationServiceImpl();
+            MessageInterfaceImpl messageService = new MessageInterfaceImpl();
 
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind(Binder.userService, userService);
