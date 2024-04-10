@@ -1,5 +1,6 @@
 package org.amalgam.client;
 
+import org.amalgam.utils.services.MessageService;
 import org.amalgam.utils.Binder;
 import org.amalgam.utils.models.User;
 import org.amalgam.utils.services.AuthenticationService;
@@ -10,10 +11,14 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
-// todo: focus on concurrency
+
+// NOTE: -> means to be used by
+
+// todo: use messaging service if fan(session) == player(session) where payment element of session and iff payment == accepted
 public class Main implements Runnable {
     private static UserService userService;
     private static AuthenticationService authService;
+    private static MessageService messageService;
     private static final Scanner kyb = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -27,6 +32,7 @@ public class Main implements Runnable {
             Registry registry = LocateRegistry.getRegistry(1099);
             userService = (UserService) registry.lookup(Binder.userService);
             authService = (AuthenticationService) registry.lookup(Binder.authService);
+            messageService = (MessageService) registry.lookup(Binder.messageService);
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
@@ -97,7 +103,7 @@ public class Main implements Runnable {
         while (true) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Messages");
-            System.out.println("2. Players"); // list of players -> then scheduling system correspond to celeb availability
+            System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability
             System.out.println("3. Profile"); // common
 
             int choice = Integer.parseInt(kyb.nextLine());
@@ -111,7 +117,7 @@ public class Main implements Runnable {
         while (true) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Messages");
-            System.out.println("2. Schedule"); // display the schedule structure for celeb
+            System.out.println("2. Schedule"); // prompt the schedule structure for celeb
             System.out.println("3. Profile"); // common
 
             int choice = Integer.parseInt(kyb.nextLine());

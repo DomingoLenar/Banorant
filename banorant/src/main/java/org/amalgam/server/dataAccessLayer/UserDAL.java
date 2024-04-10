@@ -53,7 +53,8 @@ public class UserDAL {
         }
     }
 
-    public List<User> getPlayers() { // fetch list of players -> fan
+    public List<User> getPlayers() { // fetch list of players -> fan |
+        boolean isCelebrity = true;
         return null;
     }
 }

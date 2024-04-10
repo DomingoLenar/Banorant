@@ -13,7 +13,4 @@ public class SessionDAL {
     public List<Session> getAcceptedSession(){ // list of session where payment status is accepted -> celebrity
         return null;
     }
-
-
-
 }

@@ -1,14 +1,14 @@
 package org.amalgam.client.messaging;
 
-import org.amalgam.util.interfaces.MessageCallbackInter;
+import org.amalgam.utils.services.MessageCallback;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class MessageCallbackImpl extends UnicastRemoteObject implements MessageCallbackInter {
+public class MessageCallbackImpl extends UnicastRemoteObject implements MessageCallback {
     String username;
 
-    protected MessageCallbackImpl(String username) throws RemoteException {
+    public MessageCallbackImpl(String username) throws RemoteException {
         this.username = username;
     }
 
