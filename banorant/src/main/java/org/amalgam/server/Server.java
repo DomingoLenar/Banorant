@@ -1,6 +1,7 @@
 package org.amalgam.server;
 
 import org.amalgam.server.services.AuthenticationServiceImpl;
+import org.amalgam.server.services.MessageInterfaceImpl;
 import org.amalgam.server.services.UserService;
 import org.amalgam.server.services.UserServiceImpl;
 
@@ -13,10 +14,13 @@ public class Server {
         try {
             UserService userService = new UserServiceImpl();
             AuthenticationServiceImpl authService = new AuthenticationServiceImpl();
+            MessageInterfaceImpl messageService = new MessageInterfaceImpl();
 
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("userService", userService);
             registry.rebind("authService", authService);
+            registry.rebind("messageService", messageService);
+
 
             System.out.println("Server is running and waiting for client calls...");
         } catch (RemoteException e) {
