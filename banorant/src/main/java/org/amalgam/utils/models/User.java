@@ -6,25 +6,17 @@ public class User implements Serializable {
     private int userID;
     private String username;
     private String password;
-//    private String role;
-
-    public User(int userID, String username, String password) {
+    private boolean isCelebrity = false;
+    public User(int userID, String username, String password, boolean isCelebrity) {
         this.userID = userID;
         this.username = username;
         this.password = password;
-//        this.role = null;
+        this.isCelebrity = isCelebrity;
     }
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-//        this.role = null;
     }
-
-//    public User(String username, String password, String role) {
-//        this.username = username;
-//        this.password = password;
-//        this.role = role;
-//    }
 
     public String getUsername() {
         return username;
@@ -50,11 +42,10 @@ public class User implements Serializable {
         this.userID = userID;
     }
 
-//    public String getRole() {
-//        return role;
-//    }
-//
-//    public void setRole(String role) {
-//        this.role = role;
-//    }
+    public void setCelebrity(boolean celebrity) {
+        isCelebrity = celebrity;
+    }
+    public boolean isCelebrity() {
+        return isCelebrity;
+    }
 }

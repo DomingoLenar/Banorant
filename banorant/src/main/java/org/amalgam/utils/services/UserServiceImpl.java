@@ -19,7 +19,7 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
     @Override
     public boolean createUser(String username, String password) throws RemoteException {
         try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO user (username, password) VALUES (?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO users (username, password) VALUES (?,?)");
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.execute();
@@ -32,7 +32,7 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
     @Override
     public boolean updateUser(String username, String newPassword) throws RemoteException {
         try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE user SET password = ? WHERE username = ?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE users SET password = ? WHERE username = ?");
             stmt.setString(1, username);
             stmt.setString(2, newPassword);
             int rowsAffected = stmt.executeUpdate();
@@ -45,7 +45,7 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
     @Override
     public boolean deleteUser(String username) throws RemoteException {
         try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM user WHERE username = ?");
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE username = ?");
             stmt.setString(1, username);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
