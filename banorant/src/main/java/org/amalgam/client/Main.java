@@ -108,24 +108,111 @@ public class Main implements Runnable {
 
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice){
+                case 1:
+                    System.out.println("1. View Messages");
+                    System.out.println("2. Send Message");
+                    System.out.println("3. Manage Messages");
+                    int messagesChoice = Integer.parseInt(kyb.nextLine());
+                       switch (messagesChoice){
+                           case 1: // To put logic later
 
+                           case 2: // To put logic later
+
+                           case 3: // To put logic later
+                       }
+                    break;
+                case 2:
+                    System.out.println("1. View Players");
+                    System.out.println("2. Schedule Corresponding to Players");
+                    int playerChoice = Integer.parseInt(kyb.nextLine());
+                    if (playerChoice == 1){
+                        // To put logic later
+                    } else {
+                        // To put logic later
+                    }
+                    break;
+                case 3:
+                    System.out.println("1. View Profile");
+                    System.out.println("2. Update Profile");
+
+                    int profileChoice = Integer.parseInt(kyb.nextLine());
+                    if (profileChoice == 1){
+                        // To put logic later
+                    } else {
+                        // To put logic later
+                    }
+
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
             }
         }
     }
 
     private void menuCelebrity() {
         while (true) {
-            System.out.println("Choose from the ff.");
+            System.out.println("Choose from the following options:");
             System.out.println("1. Messages");
-            System.out.println("2. Schedule"); // prompt the schedule structure for celeb
-            System.out.println("3. Profile"); // common
+            System.out.println("2. Schedule");
+            System.out.println("3. Profile");
 
             int choice = Integer.parseInt(kyb.nextLine());
-            switch (choice){
-
+            switch (choice) {
+                case 1:
+                    System.out.println("1. View Messages");
+                    System.out.println("2. Send Message");
+                    System.out.println("3. Manage Messages");
+                    int messagesChoice = Integer.parseInt(kyb.nextLine());
+                    switch (messagesChoice) {
+                        case 1:
+                            // To put logic later
+                            break;
+                        case 2:
+                            // To put logic later
+                            break;
+                        case 3:
+                            // To put logic later
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for messages.");
+                    }
+                    break;
+                case 2:
+                    System.out.println("1. View Schedule");
+                    System.out.println("2. Update Schedule");
+                    int scheduleChoice = Integer.parseInt(kyb.nextLine());
+                    switch (scheduleChoice) {
+                        case 1:
+                            // To put logic later
+                            break;
+                        case 2:
+                            // To put logic later
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for schedule.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("1. View Profile");
+                    System.out.println("2. Update Profile");
+                    int profileChoice = Integer.parseInt(kyb.nextLine());
+                    switch (profileChoice) {
+                        case 1:
+                            // To put logic later
+                            break;
+                        case 2:
+                            // To put logic later
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for profile.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
             }
         }
     }
+
 
     private void signin(){
         String username;
