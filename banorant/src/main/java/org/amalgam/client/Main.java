@@ -109,7 +109,7 @@ public class Main implements Runnable {
     private void menuFan(User user) throws RemoteException {
         while (true) {
             System.out.println("Choose from the ff.");
-            System.out.println("1. Schedules");
+            System.out.println("1. Session");
             System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability, this involves rate
             System.out.println("3. Profile"); // common
 
@@ -159,7 +159,6 @@ public class Main implements Runnable {
                                         boolean sessionRegistered = celebrityFanService.registerNewSession(user.getUserID(), date, duration, selectedPlayer.isCelebrity());
                                         if (sessionRegistered) {
                                             System.out.println("Session registered successfully.");
-                                            System.out.println("Payment registered successfully.");
                                         } else {
                                             System.out.println("Failed to register session.");
                                         }
@@ -233,14 +232,14 @@ public class Main implements Runnable {
     private void menuCelebrity(User user) {
         while (true) {
             System.out.println("Choose from the following options:");
-            System.out.println("1. Schedules");
+            System.out.println("1. Session");
             System.out.println("2. Profile");
 
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice) {
                 case 1:
-                    System.out.println("1. View Schedule");
-                    System.out.println("2. Update Schedule");
+                    System.out.println("1. View Sessions");
+                    System.out.println("2. Update Session");
                     int scheduleChoice = Integer.parseInt(kyb.nextLine());
                     switch (scheduleChoice) {
                         case 1:
