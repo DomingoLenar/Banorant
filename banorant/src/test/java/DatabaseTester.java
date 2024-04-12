@@ -1,7 +1,5 @@
-import org.amalgam.server.dataAccessLayer.DatabaseUtil;
-import org.amalgam.server.dataAccessLayer.RateDAL;
-import org.amalgam.server.dataAccessLayer.SessionDAL;
-import org.amalgam.server.dataAccessLayer.UserDAL;
+import org.amalgam.server.dataAccessLayer.*;
+import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Rate;
 import org.amalgam.utils.models.Session;
 import org.amalgam.utils.models.User;
@@ -83,5 +81,12 @@ public class DatabaseTester {
         RateDAL rateDAL = new RateDAL();
         double rate = rateDAL.getPlayerRateByPlayerID(2);
         System.out.println(rate);
+    }
+
+    @Test
+    public void testRegisterAcceptedPayment() {
+        PaymentDAL paymentDAL = new PaymentDAL();
+        boolean valid = paymentDAL.registerAcceptedPayment(1, 1, 100, Status.Accepted, "2024-04-14 12:00:00");
+        System.out.println(valid);
     }
 }
