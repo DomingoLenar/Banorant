@@ -103,7 +103,7 @@ public class Main implements Runnable {
         while (true) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Messages");
-            System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability
+            System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability, this involves rate
             System.out.println("3. Profile"); // common
 
             int choice = Integer.parseInt(kyb.nextLine());

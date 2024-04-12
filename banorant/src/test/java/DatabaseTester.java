@@ -1,6 +1,8 @@
 import org.amalgam.server.dataAccessLayer.DatabaseUtil;
+import org.amalgam.server.dataAccessLayer.RateDAL;
 import org.amalgam.server.dataAccessLayer.SessionDAL;
 import org.amalgam.server.dataAccessLayer.UserDAL;
+import org.amalgam.utils.models.Rate;
 import org.amalgam.utils.models.Session;
 import org.amalgam.utils.models.User;
 import org.amalgam.utils.services.AuthenticationService;
@@ -74,5 +76,12 @@ public class DatabaseTester {
             System.out.println(session.getDate());
             System.out.println(session.getDuration());
         }
+    }
+
+    @Test
+    public void testGetPlayerRateByPlayerID() {
+        RateDAL rateDAL = new RateDAL();
+        double rate = rateDAL.getPlayerRateByPlayerID(2);
+        System.out.println(rate);
     }
 }
