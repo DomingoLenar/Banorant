@@ -18,4 +18,6 @@ public interface CelebrityFanService extends Remote {
     Room getRoomByFanAndPlayer(int paymentID) throws RemoteException;
     boolean registerNewRoom(String room_name, int paymentID) throws RemoteException;
     List<Booking> fetchBookingByPaymentID(int paymentID) throws RemoteException;
+    int getPaymentIDByUserID(int userID) throws RemoteException;
+    boolean registerNewBooking(int userID, int sessionID, int roomID, int paymentID, String booking_date) throws RemoteException;
 }

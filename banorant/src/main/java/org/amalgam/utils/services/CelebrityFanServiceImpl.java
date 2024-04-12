@@ -59,4 +59,14 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     public List<Booking> fetchBookingByPaymentID(int paymentID) throws RemoteException {
         return bookingDAL.fetchBookingByPaymentID(paymentID);
     }
+
+    @Override
+    public int getPaymentIDByUserID(int userID) throws RemoteException {
+        return paymentDAL.getPaymentIDByUserID(userID);
+    }
+
+    @Override
+    public boolean registerNewBooking(int userID, int sessionID, int roomID, int paymentID, String booking_date) throws RemoteException {
+        return bookingDAL.registerNewBooking(userID, sessionID, roomID, paymentID, booking_date);
+    }
 }
