@@ -1,5 +1,6 @@
 package org.amalgam.client;
 
+import org.amalgam.utils.services.CelebrityFanService;
 import org.amalgam.utils.services.MessageService;
 import org.amalgam.utils.Binder;
 import org.amalgam.utils.models.User;
@@ -20,6 +21,7 @@ public class Main implements Runnable {
     private static UserService userService;
     private static AuthenticationService authService;
     private static MessageService messageService;
+    private static CelebrityFanService celebrityFanService;
     private static final Scanner kyb = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -34,6 +36,7 @@ public class Main implements Runnable {
             userService = (UserService) registry.lookup(Binder.userService);
             authService = (AuthenticationService) registry.lookup(Binder.authService);
             messageService = (MessageService) registry.lookup(Binder.messageService);
+            celebrityFanService = (CelebrityFanService) registry.lookup(Binder.celebrityFanService);
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
@@ -85,19 +88,16 @@ public class Main implements Runnable {
             }
         } while (username == null || password == null);
 
-        System.out.println("standby");
-        while (true) { // remove later
+        if (user != null) {
+            boolean isCelebrity = user.isCelebrity();
 
-            if (user != null) {
-                boolean isCelebrity = user.isCelebrity();
-
-                if (isCelebrity) {
-                    menuCelebrity(user);
-                } else {
-                    menuFan(user);
-                }
+            if (isCelebrity) {
+                menuCelebrity(user);
+            } else {
+                menuFan(user);
             }
         }
+
     }
 
     private void menuFan(User user) {

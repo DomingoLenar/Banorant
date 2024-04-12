@@ -6,14 +6,23 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SessionDAL {
 
-    public boolean registerNewSession(int fanID, int playerID, LocalDate date, int duration){ // insert new session if payment is accepted -> fan
-        return false;
+    public boolean registerNewSession(int userID, String date, int duration, boolean isCelebrity){ // insert new session if payment is accepted -> fan
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO sessions (user_id, date, duration, isCelebrity) VALUE (?,?,?,?)");
+            stmt.setInt(1, userID);
+            stmt.setString(2, date);
+            stmt.setInt(3, duration);
+            stmt.setBoolean(4, isCelebrity);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     public List<Session> getAcceptedSession(int userID){ // list of session where payment status is accepted | celebrity menu & fan menu
         List<Session> sessions = new ArrayList<>();
