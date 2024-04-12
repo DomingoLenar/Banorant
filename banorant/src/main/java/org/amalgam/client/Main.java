@@ -1,6 +1,5 @@
 package org.amalgam.client;
 
-import org.amalgam.server.dataAccessLayer.RateDAL;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.services.CelebrityFanService;
 import org.amalgam.utils.services.MessageService;
@@ -13,9 +12,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -347,7 +345,7 @@ public class Main implements Runnable {
                 return false;
             }
 
-            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), enteredSessionID, paymentAmount, Status.Accepted,getCurrentDate() );
+            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), enteredSessionID, paymentAmount, Status.Accepted,getCurrentDateTime() );
             if (paymentRegistered) {
                 System.out.println("Payment registered successfully.");
                 return true;
@@ -361,9 +359,9 @@ public class Main implements Runnable {
         }
     }
 
-    public static String getCurrentDate() {
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return currentDate.format(formatter);
+    public static String getCurrentDateTime() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return currentDateTime.format(formatter);
     }
 }
