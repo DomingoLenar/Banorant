@@ -1,12 +1,11 @@
 package org.amalgam.client;
 
 import org.amalgam.utils.Status;
-import org.amalgam.utils.services.CelebrityFanService;
-import org.amalgam.utils.services.MessageService;
+import org.amalgam.utils.models.Room;
+import org.amalgam.utils.models.Session;
+import org.amalgam.utils.services.*;
 import org.amalgam.utils.Binder;
 import org.amalgam.utils.models.User;
-import org.amalgam.utils.services.AuthenticationService;
-import org.amalgam.utils.services.UserService;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -116,15 +115,38 @@ public class Main implements Runnable {
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice){
                 case 1:
-                    // display a fan list of sessions iff payment is accepted
-                    int messagesChoice = Integer.parseInt(kyb.nextLine());
-                       switch (messagesChoice){
-                           case 1: // To put logic later
+                    try {
+                        //Enter the session number, if user press any of the sessions number, then it will display that the fan entered the room
+                        List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
+                        if (sessionList.isEmpty()){
+                            System.out.println("No accepted sessions found");
+                        } else {
+                            System.out.println("List of accepted sessions");
+                            for (int i=0; i<sessionList.size();i++){
+                                Session session = sessionList.get(i);
+                                System.out.println((i+1) + ". "+session.getSessionID());
+                            }
 
-                           case 2: // To put logic later
+                            System.out.println("Enter the session number: ");
+                            int sessionNo = Integer.parseInt(kyb.nextLine());
 
-                           case 3: // To put logic later
-                       }
+                            if (sessionNo > 0 && sessionNo <= sessionList.size()) {
+
+                                System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
+                                int paymentId = celebrityFanService.getPaymentIDByUserID(user.getUserID());
+                                Room room = celebrityFanService.getRoomByFanAndPlayer(paymentId);
+                                System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID() );
+
+                            } else {
+                                System.out.println("Invalid session number");
+                            }
+
+                        }
+
+                    } catch (RemoteException e){
+                        e.printStackTrace();
+                    }
+
                     break;
                 case 2:
                     System.out.println("1. View Players");
@@ -263,7 +285,37 @@ public class Main implements Runnable {
                     int scheduleChoice = Integer.parseInt(kyb.nextLine());
                     switch (scheduleChoice) {
                         case 1:
-                            // To put logic later
+                            try {
+                                //Enter the session number, if user press any of the sessions number, then it will display that the fan entered the room
+                                List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
+                                if (sessionList.isEmpty()){
+                                    System.out.println("No accepted sessions found");
+                                } else {
+                                    System.out.println("List of accepted sessions");
+                                    for (int i=0; i<sessionList.size();i++){
+                                        Session session = sessionList.get(i);
+                                        System.out.println((i+1) + ". "+session.getSessionID());
+                                    }
+
+                                    System.out.println("Enter the session number: ");
+                                    int sessionNo = Integer.parseInt(kyb.nextLine());
+
+                                    if (sessionNo > 0 && sessionNo <= sessionList.size()) {
+
+                                        System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
+                                        int paymentId = celebrityFanService.getPaymentIDByUserID(user.getUserID());
+                                        Room room = celebrityFanService.getRoomByFanAndPlayer(paymentId);
+                                        System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID() );
+
+                                    } else {
+                                        System.out.println("Invalid session number");
+                                    }
+
+                                }
+
+                            } catch (RemoteException e){
+                                e.printStackTrace();
+                            }
                             break;
                         case 2:
                             // To put logic later
@@ -274,7 +326,7 @@ public class Main implements Runnable {
                     break;
                 case 2:
                     System.out.println("1. View Profile");
-                    System.out.println("2. Update Profile");
+                    System.out.println("2. Update Password");
                     System.out.println("3. Delete Profile");
 
                     int profileChoice = Integer.parseInt(kyb.nextLine());
