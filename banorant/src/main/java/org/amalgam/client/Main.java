@@ -1,5 +1,7 @@
 package org.amalgam.client;
 
+import org.amalgam.server.dataAccessLayer.RateDAL;
+import org.amalgam.utils.Status;
 import org.amalgam.utils.services.CelebrityFanService;
 import org.amalgam.utils.services.MessageService;
 import org.amalgam.utils.Binder;
@@ -11,6 +13,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -40,10 +45,14 @@ public class Main implements Runnable {
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
-        index();
+        try {
+            index();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void index() {
+    private void index() throws RemoteException {
         while (true) {
             System.out.println("Choose from the following");
             System.out.println("1. Login");
@@ -67,7 +76,7 @@ public class Main implements Runnable {
         }
     }
 
-    private void login() {
+    private void login() throws RemoteException {
         User user = null;
         String username;
         String password;
@@ -100,7 +109,7 @@ public class Main implements Runnable {
 
     }
 
-    private void menuFan(User user) {
+    private void menuFan(User user) throws RemoteException {
         while (true) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Schedules");
@@ -123,7 +132,7 @@ public class Main implements Runnable {
                 case 2:
                     System.out.println("1. View Players");
                     int playerChoice = Integer.parseInt(kyb.nextLine());
-                    if (playerChoice == 1){
+                    if (playerChoice == 1) {
                         try {
                             List<User> listOfPlayers = userService.getPlayers();
                             if (listOfPlayers.isEmpty()) {
@@ -132,16 +141,45 @@ public class Main implements Runnable {
                                 System.out.println("List of Players:");
                                 for (int i = 0; i < listOfPlayers.size(); i++) {
                                     User player = listOfPlayers.get(i);
-                                    System.out.println((i + 1) + ". " + player.getUsername());
+                                    double playerRate = celebrityFanService.getPlayerRateByPlayerID(player.getUserID());
+                                    System.out.println((i + 1) + ". " + player.getUsername() + " Rate: " + playerRate);
+                                }
+                                System.out.println("Enter player number to select:");
+                                int selectedPlayerIndex = Integer.parseInt(kyb.nextLine()) - 1;
+                                if (selectedPlayerIndex >= 0 && selectedPlayerIndex < listOfPlayers.size()) {
+                                    User selectedPlayer = listOfPlayers.get(selectedPlayerIndex);
+                                    System.out.println("Creating session for player: " + selectedPlayer.getUsername());
+                                    System.out.println("Enter session date (YYYY-MM-DD):");
+                                    String date = kyb.nextLine();
+                                    System.out.println("Enter session duration (in minutes):");
+                                    int duration = Integer.parseInt(kyb.nextLine());
+
+                                    System.out.println("Payment processing...");
+                                    boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
+
+                                    if (paymentAccepted) {
+                                        // If payment registration is successful, register the session
+                                        boolean sessionRegistered = celebrityFanService.registerNewSession(user.getUserID(), date, duration, selectedPlayer.isCelebrity());
+                                        if (sessionRegistered) {
+                                            System.out.println("Session registered successfully.");
+                                            System.out.println("Payment registered successfully.");
+                                        } else {
+                                            System.out.println("Failed to register session.");
+                                        }
+                                    } else {
+                                        System.out.println("Failed to register payment.");
+                                    }
+                                } else {
+                                    System.out.println("Invalid player selection.");
                                 }
                             }
                         } catch (RemoteException e) {
                             throw new RuntimeException(e);
                         }
-                    } else {
-                        // To put logic later
                     }
                     break;
+
+
                 case 3:
                     System.out.println("1. View Profile");
                     System.out.println("2. Update Profile");
@@ -250,7 +288,7 @@ public class Main implements Runnable {
                                     boolean deleted = userService.deleteUser(user.getUsername());
                                     if (deleted) {
                                         System.out.println("Profile deleted successfully.");
-                                        // You might want to exit or redirect after profile deletion
+
                                     } else {
                                         System.out.println("Failed to delete profile.");
                                     }
@@ -294,4 +332,38 @@ public class Main implements Runnable {
     }
 
 
+    public boolean processPayment(User user, double playerRate) {
+        try {
+            // Prompt for payment details
+            System.out.println("Enter the session ID:");
+            int enteredSessionID = Integer.parseInt(kyb.nextLine());
+
+
+            System.out.println("Enter the amount you will pay:");
+            int paymentAmount = Integer.parseInt(kyb.nextLine());
+
+            if (paymentAmount < playerRate) {
+                System.out.println("Payment amount is less than the player rate. Please pay again.");
+                return false;
+            }
+
+            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), enteredSessionID, paymentAmount, Status.Accepted,getCurrentDate() );
+            if (paymentRegistered) {
+                System.out.println("Payment registered successfully.");
+                return true;
+            } else {
+                System.out.println("Failed to register payment.");
+                return false;
+            }
+        } catch (NumberFormatException | RemoteException e) {
+            System.out.println("Invalid input format.");
+            return false;
+        }
+    }
+
+    public static String getCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return currentDate.format(formatter);
+    }
 }
