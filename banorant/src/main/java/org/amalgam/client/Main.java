@@ -128,7 +128,7 @@ public class Main implements Runnable {
                             System.out.println("List of sessions");
                             for (int i=0; i<sessionList.size();i++){
                                 Session session = sessionList.get(i);
-                                System.out.println("Session Number("+ i+1 + ") Date:" + session.getDate());
+                                System.out.println("Session Number("+ (i+1) + ") Date:" + session.getDate());
                             }
 
                             System.out.println("Enter the session number: ");
@@ -331,7 +331,7 @@ public class Main implements Runnable {
                                     System.out.println("List of sessions");
                                     for (int i=0; i<sessionList.size();i++){
                                         Session session = sessionList.get(i);
-                                        System.out.println("Session Number("+ i+1 + ") Date:" + session.getDate());
+                                        System.out.println("Session Number("+ (i+1) + ") Date:" + session.getDate());
                                     }
 
                                     System.out.println("Enter the session number: ");

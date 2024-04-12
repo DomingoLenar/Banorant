@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseUtil {
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/db_banorant?user=root&password";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/marven?user=root&password";
     private static Connection connection;
 
     private DatabaseUtil() {}
