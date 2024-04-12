@@ -7,7 +7,6 @@ import org.amalgam.utils.models.Session;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.time.LocalDate;
 import java.util.List;
 
 public interface CelebrityFanService extends Remote {

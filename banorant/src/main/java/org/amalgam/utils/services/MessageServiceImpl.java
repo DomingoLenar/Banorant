@@ -9,7 +9,6 @@ import java.util.LinkedList;
 
 public class MessageServiceImpl extends UnicastRemoteObject implements MessageService {
     LinkedList<MessageCallback> users = new LinkedList<>();
-
     public MessageServiceImpl() throws RemoteException {
     }
     @Override

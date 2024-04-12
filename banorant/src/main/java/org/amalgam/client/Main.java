@@ -21,11 +21,12 @@ import java.util.Scanner;
 
 // todo: use messaging service if fan(session) == player(session) where payment element of session and iff payment == accepted
 public class Main implements Runnable {
-    private static UserService userService;
-    private static AuthenticationService authService;
-    private static MessageService messageService;
-    private static CelebrityFanService celebrityFanService;
-    private static final Scanner kyb = new Scanner(System.in);
+    private UserService userService;
+    private AuthenticationService authService;
+    private MessageService messageService;
+    private CelebrityFanService celebrityFanService;
+    private final Scanner kyb = new Scanner(System.in);
+    private LocalDateTime localDateTime;
 
     public static void main(String[] args) {
         Main main = new Main();
@@ -353,7 +354,7 @@ public class Main implements Runnable {
         }
     }
 
-    public static String getCurrentDateTime() {
+    public String getCurrentDateTime() {
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return currentDateTime.format(formatter);
