@@ -10,6 +10,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.List;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
@@ -91,15 +92,15 @@ public class Main implements Runnable {
                 boolean isCelebrity = user.isCelebrity();
 
                 if (isCelebrity) {
-                    menuCelebrity();
+                    menuCelebrity(user);
                 } else {
-                    menuFan();
+                    menuFan(user);
                 }
             }
         }
     }
 
-    private void menuFan() {
+    private void menuFan(User user) {
         while (true) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Messages");
@@ -108,24 +109,191 @@ public class Main implements Runnable {
 
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice){
+                case 1:
+                    System.out.println("1. View Messages");
+                    System.out.println("2. Send Message");
+                    System.out.println("3. Manage Messages");
+                    int messagesChoice = Integer.parseInt(kyb.nextLine());
+                       switch (messagesChoice){
+                           case 1: // To put logic later
 
+                           case 2: // To put logic later
+
+                           case 3: // To put logic later
+                       }
+                    break;
+                case 2:
+                    System.out.println("1. View Players");
+                    System.out.println("2. Schedule Corresponding to Players");
+                    int playerChoice = Integer.parseInt(kyb.nextLine());
+                    if (playerChoice == 1){
+                        try {
+                            List<User> listOfPlayers = userService.getPlayers();
+                            if (listOfPlayers.isEmpty()) {
+                                System.out.println("No players found.");
+                            } else {
+                                System.out.println("List of Players:");
+                                for (int i = 0; i < listOfPlayers.size(); i++) {
+                                    User player = listOfPlayers.get(i);
+                                    System.out.println((i + 1) + ". " + player.getUsername());
+                                }
+                            }
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        // To put logic later
+                    }
+                    break;
+                case 3:
+                    System.out.println("1. View Profile");
+                    System.out.println("2. Update Profile");
+                    System.out.println("3. Delete Profile");
+
+                    int profileChoice = Integer.parseInt(kyb.nextLine());
+                    switch (profileChoice) {
+                        case 1:
+                            //To put logic later
+                            break;
+
+                        case 2:
+                            System.out.println("Enter new password:");
+                            String newPassword = kyb.nextLine();
+                            try {
+                                boolean updated = userService.updateUser(user.getUsername(), newPassword);
+                                if (updated) {
+                                    System.out.println("Profile updated successfully.");
+                                } else {
+                                    System.out.println("Failed to update profile.");
+                                }
+                            } catch (RemoteException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case 3:
+                            System.out.println("Are you sure you want to delete your profile? (Y/N)");
+                            String confirm = kyb.nextLine().toLowerCase();
+                            if (confirm.equals("y")) {
+                                try {
+                                    boolean deleted = userService.deleteUser(user.getUsername());
+                                    if (deleted) {
+                                        System.out.println("Profile deleted successfully.");
+                                    } else {
+                                        System.out.println("Failed to delete profile.");
+                                    }
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                System.out.println("Profile deletion cancelled.");
+                            }
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for profile.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
             }
         }
     }
 
-    private void menuCelebrity() {
+    private void menuCelebrity(User user) {
         while (true) {
-            System.out.println("Choose from the ff.");
+            System.out.println("Choose from the following options:");
             System.out.println("1. Messages");
-            System.out.println("2. Schedules"); // prompt the schedule structure for celeb
-            System.out.println("3. Profile"); // common
+            System.out.println("2. Schedules");
+            System.out.println("3. Profile");
 
             int choice = Integer.parseInt(kyb.nextLine());
-            switch (choice){
+            switch (choice) {
+                case 1:
+                    System.out.println("1. View Messages");
+                    System.out.println("2. Send Message");
+                    System.out.println("3. Manage Messages");
+                    int messagesChoice = Integer.parseInt(kyb.nextLine());
+                    switch (messagesChoice) {
+                        case 1:
+                            // To put logic later
+                            break;
+                        case 2:
+                            // To put logic later
+                            break;
+                        case 3:
+                            // To put logic later
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for messages.");
+                    }
+                    break;
+                case 2:
+                    System.out.println("1. View Schedule");
+                    System.out.println("2. Update Schedule");
+                    int scheduleChoice = Integer.parseInt(kyb.nextLine());
+                    switch (scheduleChoice) {
+                        case 1:
+                            // To put logic later
+                            break;
+                        case 2:
+                            // To put logic later
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for schedule.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("1. View Profile");
+                    System.out.println("2. Update Profile");
+                    System.out.println("3. Delete Profile");
 
+                    int profileChoice = Integer.parseInt(kyb.nextLine());
+                    switch (profileChoice) {
+                        case 1:
+                            //To put logic later
+
+                        case 2:
+                            System.out.println("Enter new password:");
+                            String newPassword = kyb.nextLine();
+                            try {
+                                boolean updated = userService.updateUser(user.getUsername(), newPassword);
+                                if (updated) {
+                                    System.out.println("Profile updated successfully.");
+                                } else {
+                                    System.out.println("Failed to update profile.");
+                                }
+                            } catch (RemoteException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case 3:
+                            System.out.println("Are you sure you want to delete your profile? (Y/N)");
+                            String confirm = kyb.nextLine().toLowerCase();
+                            if (confirm.equals("y")) {
+                                try {
+                                    boolean deleted = userService.deleteUser(user.getUsername());
+                                    if (deleted) {
+                                        System.out.println("Profile deleted successfully.");
+                                        // You might want to exit or redirect after profile deletion
+                                    } else {
+                                        System.out.println("Failed to delete profile.");
+                                    }
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } else {
+                                System.out.println("Profile deletion cancelled.");
+                            }
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please choose a valid option for profile.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
             }
         }
     }
+
 
     private void signin(){
         String username;
