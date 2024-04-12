@@ -4,6 +4,7 @@ import org.amalgam.utils.Status;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PaymentDAL {
@@ -23,6 +24,16 @@ public class PaymentDAL {
     }
 
     public int getPaymentIDByUserID(int userID) {
-        return 0;
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT payment_id FROM payments WHERE user_id = ?");
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("payment_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0; // Return 0 if no payment ID found for the user ID
     }
 }

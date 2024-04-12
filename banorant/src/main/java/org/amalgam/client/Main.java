@@ -146,7 +146,7 @@ public class Main implements Runnable {
                                 if (selectedPlayerIndex >= 0 && selectedPlayerIndex < listOfPlayers.size()) {
                                     User selectedPlayer = listOfPlayers.get(selectedPlayerIndex);
                                     System.out.println("Creating session for player: " + selectedPlayer.getUsername());
-                                    System.out.println("Enter session date (YYYY-MM-DD):");
+                                    System.out.println("Enter session date (YYYY-MM-DD-HH-MM-SS):");
                                     String date = kyb.nextLine();
                                     System.out.println("Enter session duration (in minutes):");
                                     int duration = Integer.parseInt(kyb.nextLine());
@@ -156,9 +156,29 @@ public class Main implements Runnable {
 
                                     if (paymentAccepted) {
                                         // If payment registration is successful, register the session
-                                        boolean sessionRegistered = celebrityFanService.registerNewSession(user.getUserID(), date, duration, selectedPlayer.isCelebrity());
+                                        int userID = user.getUserID();
+                                        boolean sessionRegistered = celebrityFanService.registerNewSession(userID, date, duration, selectedPlayer.isCelebrity());
+
                                         if (sessionRegistered) {
                                             System.out.println("Session registered successfully.");
+                                            String roomName = "meeting "+selectedPlayer.getUsername() +" "+user.getUsername();
+                                            int paymentID = celebrityFanService.getPaymentIDByUserID(userID);
+                                            boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID);
+
+                                            if (roomRegistered){
+                                                System.out.println("Room registered successfully.");
+
+                                                int sessionID = celebrityFanService.getSessionIDByUserID(user.getUserID());
+                                                int roomID = celebrityFanService.getRoomIDByPaymentID(paymentID);
+
+                                                boolean registerBooking = celebrityFanService.registerNewBooking(userID,sessionID,roomID,paymentID,date);
+
+                                                if (registerBooking){
+                                                    System.out.println("Booking registered successfully. ");
+                                                } else System.out.println("Failed to register booking");
+
+                                            } else System.out.println("Failed to register room. ");
+
                                         } else {
                                             System.out.println("Failed to register session.");
                                         }
