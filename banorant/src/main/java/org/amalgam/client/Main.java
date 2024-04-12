@@ -103,16 +103,14 @@ public class Main implements Runnable {
     private void menuFan(User user) {
         while (true) {
             System.out.println("Choose from the ff.");
-            System.out.println("1. Messages");
+            System.out.println("1. Schedules");
             System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability, this involves rate
             System.out.println("3. Profile"); // common
 
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice){
                 case 1:
-                    System.out.println("1. View Messages");
-                    System.out.println("2. Send Message");
-                    System.out.println("3. Manage Messages");
+                    // display a fan list of sessions iff payment is accepted
                     int messagesChoice = Integer.parseInt(kyb.nextLine());
                        switch (messagesChoice){
                            case 1: // To put logic later
@@ -124,7 +122,6 @@ public class Main implements Runnable {
                     break;
                 case 2:
                     System.out.println("1. View Players");
-                    System.out.println("2. Schedule Corresponding to Players");
                     int playerChoice = Integer.parseInt(kyb.nextLine());
                     if (playerChoice == 1){
                         try {
@@ -201,32 +198,12 @@ public class Main implements Runnable {
     private void menuCelebrity(User user) {
         while (true) {
             System.out.println("Choose from the following options:");
-            System.out.println("1. Messages");
-            System.out.println("2. Schedules");
-            System.out.println("3. Profile");
+            System.out.println("1. Schedules");
+            System.out.println("2. Profile");
 
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice) {
                 case 1:
-                    System.out.println("1. View Messages");
-                    System.out.println("2. Send Message");
-                    System.out.println("3. Manage Messages");
-                    int messagesChoice = Integer.parseInt(kyb.nextLine());
-                    switch (messagesChoice) {
-                        case 1:
-                            // To put logic later
-                            break;
-                        case 2:
-                            // To put logic later
-                            break;
-                        case 3:
-                            // To put logic later
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please choose a valid option for messages.");
-                    }
-                    break;
-                case 2:
                     System.out.println("1. View Schedule");
                     System.out.println("2. Update Schedule");
                     int scheduleChoice = Integer.parseInt(kyb.nextLine());
@@ -241,7 +218,7 @@ public class Main implements Runnable {
                             System.out.println("Invalid choice. Please choose a valid option for schedule.");
                     }
                     break;
-                case 3:
+                case 2:
                     System.out.println("1. View Profile");
                     System.out.println("2. Update Profile");
                     System.out.println("3. Delete Profile");
