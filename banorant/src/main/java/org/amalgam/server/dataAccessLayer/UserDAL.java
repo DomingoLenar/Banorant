@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAL {
@@ -53,8 +54,23 @@ public class UserDAL {
         }
     }
 
-    public List<User> getPlayers() { // fetch list of players -> fan |
-        boolean isCelebrity = true;
-        return null;
+    public List<User> getPlayers() { // fetch list of players -> fan menu
+        List<User> players = new ArrayList<>();
+        try (Connection conn = DatabaseUtil.getConnection()){
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE isCelebrity = ?");
+            stmt.setInt(1, 1);
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    int userId = rs.getInt("user_id");
+                    String fetchedUsername = rs.getString("username");
+                    String fetchedPassword = rs.getString("password");
+                    boolean isCelebrity = rs.getBoolean("isCelebrity");
+                    players.add(new User(userId, fetchedUsername, fetchedPassword, isCelebrity));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return players;
     }
 }

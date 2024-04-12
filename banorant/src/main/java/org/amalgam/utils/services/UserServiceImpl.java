@@ -2,6 +2,7 @@ package org.amalgam.utils.services;
 
 import org.amalgam.server.dataAccessLayer.DatabaseUtil;
 import org.amalgam.server.dataAccessLayer.UserDAL;
+import org.amalgam.utils.models.User;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -9,6 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserServiceImpl extends UnicastRemoteObject implements UserService, Serializable {
     private UserDAL userDAL;
@@ -57,5 +59,10 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
     @Override
     public int getUserIdByUsername(String username) throws RemoteException {
         return userDAL.getUserIdByUsername(username);
+    }
+
+    @Override
+    public List<User> getPlayers() throws RemoteException {
+        return userDAL.getPlayers();
     }
 }

@@ -1,37 +1,34 @@
 package org.amalgam.utils.models;
 
+import java.time.LocalDate;
+
 public class Booking {
-    private int roomID;
-    private int scheduleID;
+    private int bookingID;
     private int userID;
+    private int sessionID;
+    private int roomID;
     private int paymentID;
+    private String bookingDate; // format of date is 'YYYY-MM-DD HH:MM:SS'
 
     public Booking() {
-        // Default constructor
+
     }
 
-    public Booking(int roomID, int scheduleID, int userID, int paymentID) {
-        this.roomID = roomID;
-        this.scheduleID = scheduleID;
+    public Booking(int bookingID, int userID, int sessionID, int roomID, int paymentID, String bookingDate) {
+        this.bookingID = bookingID;
         this.userID = userID;
-        this.paymentID = paymentID;
-    }
-
-    // Getters and setters
-    public int getRoomID() {
-        return roomID;
-    }
-
-    public void setRoomID(int roomID) {
+        this.sessionID = sessionID;
         this.roomID = roomID;
+        this.paymentID = paymentID;
+        this.bookingDate = bookingDate;
     }
 
-    public int getScheduleID() {
-        return scheduleID;
+    public int getBookingID() {
+        return bookingID;
     }
 
-    public void setScheduleID(int scheduleID) {
-        this.scheduleID = scheduleID;
+    public void setBookingID(int bookingID) {
+        this.bookingID = bookingID;
     }
 
     public int getUserID() {
@@ -42,6 +39,22 @@ public class Booking {
         this.userID = userID;
     }
 
+    public int getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(int sessionID) {
+        this.sessionID = sessionID;
+    }
+
+    public int getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(int roomID) {
+        this.roomID = roomID;
+    }
+
     public int getPaymentID() {
         return paymentID;
     }
@@ -50,4 +63,11 @@ public class Booking {
         this.paymentID = paymentID;
     }
 
+    public String getBookingDate() {
+        return bookingDate;
+    }
+
+    public void setBookingDate(String bookingDate) {
+        this.bookingDate = bookingDate;
+    }
 }
