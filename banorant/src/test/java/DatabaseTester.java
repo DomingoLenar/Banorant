@@ -86,7 +86,7 @@ public class DatabaseTester {
     @Test
     public void testRegisterAcceptedPayment() {
         PaymentDAL paymentDAL = new PaymentDAL();
-        boolean valid = paymentDAL.registerAcceptedPayment(1, 1, 100, Status.Accepted, "2024-04-14 12:00:00");
+        boolean valid = paymentDAL.registerAcceptedPayment(1, 100, Status.Accepted, "2024-04-14 12:00:00");
         System.out.println(valid);
     }
 

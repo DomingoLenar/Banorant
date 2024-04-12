@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CelebrityFanService extends Remote {
-    boolean registerAcceptedPayment(int fanID, int sessionID, int totalAmount, Status status, String paymentDate) throws RemoteException;
+    boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) throws RemoteException;
     double getPlayerRateByPlayerID(int playerID) throws RemoteException;
     List<Session> getAcceptedSession(int userID) throws RemoteException;
     boolean registerNewSession(int fanID, String date, int duration, boolean isCelebrity) throws RemoteException;

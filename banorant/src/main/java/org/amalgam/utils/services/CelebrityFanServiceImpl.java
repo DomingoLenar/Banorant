@@ -26,8 +26,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-    public boolean registerAcceptedPayment(int fanID, int sessionID, int totalAmount, Status status, String paymentDate) throws RemoteException {
-        return paymentDAL.registerAcceptedPayment(fanID, sessionID, totalAmount, status, paymentDate);
+    public boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) throws RemoteException {
+        return paymentDAL.registerAcceptedPayment(fanID, totalAmount, status, paymentDate);
     }
 
     @Override

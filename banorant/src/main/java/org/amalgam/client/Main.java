@@ -97,7 +97,6 @@ public class Main implements Runnable {
 
         if (user != null) {
             boolean isCelebrity = user.isCelebrity();
-
             if (isCelebrity) {
                 menuCelebrity(user);
             } else {
@@ -332,10 +331,6 @@ public class Main implements Runnable {
 
     public boolean processPayment(User user, double playerRate) {
         try {
-            // Prompt for payment details
-            System.out.println("Enter the session ID:");
-            int enteredSessionID = Integer.parseInt(kyb.nextLine());
-
 
             System.out.println("Enter the amount you will pay:");
             int paymentAmount = Integer.parseInt(kyb.nextLine());
@@ -345,7 +340,7 @@ public class Main implements Runnable {
                 return false;
             }
 
-            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), enteredSessionID, paymentAmount, Status.Accepted,getCurrentDateTime() );
+            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), paymentAmount, Status.Accepted,getCurrentDateTime() );
             if (paymentRegistered) {
                 System.out.println("Payment registered successfully.");
                 return true;
