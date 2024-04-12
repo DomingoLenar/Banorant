@@ -1,6 +1,8 @@
 package org.amalgam.utils.models;
 
-public class Rate {
+import java.io.Serializable;
+
+public class Rate implements Serializable {
     private int rateID;
     private int playerID;
     private double rate;

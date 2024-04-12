@@ -96,4 +96,10 @@ public class DatabaseTester {
         boolean valid = sessionDAL.registerNewSession(2, "2024-04-12 03:00:00", 60, true); // for player
         System.out.println(valid);
     }
+
+    @Test
+    public void testGetRoomByDate() {
+        RoomDAL roomDAL = new RoomDAL();
+        System.out.println(roomDAL.getRoomByDate("2024-04-12 03:00:00").getName());
+    }
 }

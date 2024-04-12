@@ -15,11 +15,12 @@ public interface CelebrityFanService extends Remote {
     List<Session> getAcceptedSession(int userID) throws RemoteException;
     boolean registerNewSession(int fanID, String date, int duration, boolean isCelebrity) throws RemoteException;
     Room getRoomByFanAndPlayer(int paymentID) throws RemoteException;
-    boolean registerNewRoom(String room_name, int paymentID) throws RemoteException;
+    boolean registerNewRoom(String room_name, int paymentID, String date) throws RemoteException;
     List<Booking> fetchBookingByPaymentID(int paymentID) throws RemoteException;
     int getPaymentIDByUserID(int userID) throws RemoteException;
     boolean registerNewBooking(int userID, int sessionID, int roomID, int paymentID, String booking_date) throws RemoteException;
     public int getSessionIDByUserID (int userID) throws RemoteException;
 
     public int getRoomIDByPaymentID (int paymentID) throws RemoteException;
+    Room getRoomByDate(String date) throws RemoteException;
 }

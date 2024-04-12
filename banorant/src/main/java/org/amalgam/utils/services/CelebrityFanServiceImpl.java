@@ -51,8 +51,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-    public boolean registerNewRoom(String room_name, int paymentID) throws RemoteException {
-        return roomDAL.registerNewRoom(room_name,paymentID);
+    public boolean registerNewRoom(String room_name, int paymentID, String date) throws RemoteException {
+        return roomDAL.registerNewRoom(room_name,paymentID,date);
     }
 
     @Override
@@ -78,6 +78,11 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     @Override
     public int getRoomIDByPaymentID(int paymentID) throws RemoteException {
         return roomDAL.getRoomIDByPaymentID(paymentID);
+    }
+
+    @Override
+    public Room getRoomByDate(String date) throws RemoteException {
+        return roomDAL.getRoomByDate(date);
     }
 
 

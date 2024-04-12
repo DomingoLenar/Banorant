@@ -5,6 +5,7 @@ import org.amalgam.utils.services.MessageService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class MessageServiceImpl extends UnicastRemoteObject implements MessageService {

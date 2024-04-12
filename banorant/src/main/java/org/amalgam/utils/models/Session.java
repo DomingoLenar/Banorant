@@ -1,10 +1,11 @@
 package org.amalgam.utils.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 
-public class Session {
+public class Session implements Serializable {
     private int sessionID;
     private int userID;
     private String date; // format of date is 'YYYY-MM-DD HH:MM:SS'

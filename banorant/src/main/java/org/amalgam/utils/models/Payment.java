@@ -2,9 +2,10 @@ package org.amalgam.utils.models;
 
 import org.amalgam.utils.Status;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Payment {
+public class Payment implements Serializable {
     private int paymentID;
     private int userID;
     private int sessionID;

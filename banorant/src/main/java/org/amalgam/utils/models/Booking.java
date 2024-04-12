@@ -1,8 +1,8 @@
 package org.amalgam.utils.models;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-public class Booking {
+public class Booking implements Serializable {
     private int bookingID;
     private int userID;
     private int sessionID;

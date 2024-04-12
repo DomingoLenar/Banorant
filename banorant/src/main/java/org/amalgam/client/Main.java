@@ -1,5 +1,6 @@
 package org.amalgam.client;
 
+import org.amalgam.client.messaging.MessageCallbackImpl;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Room;
 import org.amalgam.utils.models.Session;
@@ -11,9 +12,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
@@ -25,7 +28,7 @@ public class Main implements Runnable {
     private MessageService messageService;
     private CelebrityFanService celebrityFanService;
     private final Scanner kyb = new Scanner(System.in);
-    private LocalDateTime localDateTime;
+    private MessageCallbackImpl messageCallback;
 
     public static void main(String[] args) {
         Main main = new Main();
@@ -117,15 +120,15 @@ public class Main implements Runnable {
             switch (choice){
                 case 1:
                     try {
-                        //Enter the session number, if user press any of the sessions number, then it will display that the fan entered the room
+                        // Enter the session number, if user press any of the sessions number, then it will display that the fan entered the room
                         List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
                         if (sessionList.isEmpty()){
                             System.out.println("No accepted sessions found");
                         } else {
-                            System.out.println("List of accepted sessions");
+                            System.out.println("List of sessions");
                             for (int i=0; i<sessionList.size();i++){
                                 Session session = sessionList.get(i);
-                                System.out.println((i+1) + ". "+session.getSessionID());
+                                System.out.println("Session Number("+ i+1 + ") Date:" + session.getDate());
                             }
 
                             System.out.println("Enter the session number: ");
@@ -136,7 +139,41 @@ public class Main implements Runnable {
                                 System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
                                 int paymentId = celebrityFanService.getPaymentIDByUserID(user.getUserID());
                                 Room room = celebrityFanService.getRoomByFanAndPlayer(paymentId);
-                                System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID() );
+                                System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID());
+
+                                String fetchedDate = sessionList.get(sessionNo - 1).getDate();
+
+                                Thread dateCheckingThread = new Thread(() -> {
+                                    boolean sessionStarted = false;
+                                    while (!sessionStarted) {
+                                        if (getCurrentDateTime().equals(fetchedDate)) {
+                                            System.out.println("Session is started");
+                                            sessionStarted = true;
+                                            try {
+                                                messageCallback = new MessageCallbackImpl(user.getUsername());
+                                                messageService.logSession(messageCallback);
+                                                System.out.print("Type Message: ");
+
+                                            } catch (RemoteException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                    }
+                                });
+                                dateCheckingThread.start();
+
+
+                                while (true){
+                                    try {
+                                        dateCheckingThread.join();
+                                        while (true) {
+                                            String input = kyb.nextLine();
+                                            messageService.broadcast(messageCallback, input);
+                                        }
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
 
                             } else {
                                 System.out.println("Invalid session number");
@@ -186,7 +223,7 @@ public class Main implements Runnable {
                                             System.out.println("Session registered successfully.");
                                             String roomName = "meeting "+selectedPlayer.getUsername() +" "+user.getUsername();
                                             int paymentID = celebrityFanService.getPaymentIDByUserID(userID);
-                                            boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID);
+                                            boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID, date);
 
                                             if (roomRegistered){
                                                 System.out.println("Room registered successfully.");
@@ -287,15 +324,14 @@ public class Main implements Runnable {
                     switch (scheduleChoice) {
                         case 1:
                             try {
-                                //Enter the session number, if user press any of the sessions number, then it will display that the fan entered the room
                                 List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
                                 if (sessionList.isEmpty()){
                                     System.out.println("No accepted sessions found");
                                 } else {
-                                    System.out.println("List of accepted sessions");
+                                    System.out.println("List of sessions");
                                     for (int i=0; i<sessionList.size();i++){
                                         Session session = sessionList.get(i);
-                                        System.out.println((i+1) + ". "+session.getSessionID());
+                                        System.out.println("Session Number("+ i+1 + ") Date:" + session.getDate());
                                     }
 
                                     System.out.println("Enter the session number: ");
@@ -304,9 +340,41 @@ public class Main implements Runnable {
                                     if (sessionNo > 0 && sessionNo <= sessionList.size()) {
 
                                         System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
-                                        int paymentId = celebrityFanService.getPaymentIDByUserID(user.getUserID());
-                                        Room room = celebrityFanService.getRoomByFanAndPlayer(paymentId);
+                                        Room room = celebrityFanService.getRoomByDate(sessionList.get(sessionNo - 1).getDate());
                                         System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID() );
+
+                                        String fetchedDate = sessionList.get(sessionNo - 1).getDate();
+
+                                        Thread dateCheckingThread = new Thread(() -> {
+                                                boolean sessionStarted = false;
+                                                while (!sessionStarted) {
+                                                    if (getCurrentDateTime().equals(fetchedDate)) {
+                                                        System.out.println("Session is started");
+                                                        sessionStarted = true;
+                                                        try {
+                                                            messageCallback = new MessageCallbackImpl(user.getUsername());
+                                                            messageService.logSession(messageCallback);
+                                                            System.out.print("Type Message: ");
+
+                                                        } catch (RemoteException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                            dateCheckingThread.start();
+
+                                        while (true){
+                                            try {
+                                                dateCheckingThread.join();
+                                                while (true) {
+                                                    String input = kyb.nextLine();
+                                                    messageService.broadcast(messageCallback, input);
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
 
                                     } else {
                                         System.out.println("Invalid session number");
@@ -377,7 +445,6 @@ public class Main implements Runnable {
             }
         }
     }
-
 
     private void signin(){
         String username;
