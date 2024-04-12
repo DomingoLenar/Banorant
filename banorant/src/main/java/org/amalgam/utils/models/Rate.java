@@ -2,14 +2,13 @@ package org.amalgam.utils.models;
 
 public class Rate {
     private int rateID;
-    private int userID;
+    private int playerID;
     private double rate;
 //    private String effectiveDate;
 
-
-    public Rate(int rateID, int userID, double rate) {
+    public Rate(int rateID, int playerID, double rate) {
         this.rateID = rateID;
-        this.userID = userID;
+        this.playerID = playerID;
         this.rate = rate;
     }
 
@@ -21,12 +20,12 @@ public class Rate {
         this.rateID = rateID;
     }
 
-    public int getUserID() {
-        return userID;
+    public int getPlayerID() {
+        return playerID;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
     }
 
     public double getRate() {
