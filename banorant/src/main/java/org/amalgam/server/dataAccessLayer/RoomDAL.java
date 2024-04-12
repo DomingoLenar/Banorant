@@ -37,4 +37,22 @@ public class RoomDAL {
             throw new RuntimeException(e);
         }
     }
+
+    public int getRoomIDByPaymentID (int paymentID){
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT room_id FROM rooms WHERE payment_id = ?");
+            stmt.setInt(1, paymentID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("room_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0; // Return 0 if no payment ID found for the user ID
+    }
+
+
+
+
 }

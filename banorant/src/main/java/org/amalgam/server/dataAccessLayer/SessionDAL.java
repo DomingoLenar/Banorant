@@ -43,4 +43,20 @@ public class SessionDAL {
         }
         return sessions;
     }
+
+    public int getSessionIDByUserID (int userID)  {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT session_id FROM sessions WHERE user_id = ?");
+            stmt.setInt(1,userID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                return rs.getInt("session_id");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }
