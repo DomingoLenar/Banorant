@@ -19,7 +19,7 @@ public class BookingDAL {
         try {
             connection = DatabaseUtil.getConnection();
 
-            String query = "SELECT * FROM booking WHERE paymentID = ?";
+            String query = "SELECT * FROM bookings WHERE payment_id = ?";
             statement = connection.prepareStatement(query);
 
             statement.setInt(1, paymentID);
@@ -29,7 +29,7 @@ public class BookingDAL {
             while (resultSet.next()) {
                 Booking booking = new Booking();
                 booking.setRoomID(resultSet.getInt("roomID"));
-                booking.setScheduleID(resultSet.getInt("scheduleID"));
+                booking.setSessionID(resultSet.getInt("scheduleID"));
                 booking.setUserID(resultSet.getInt("userID"));
                 booking.setPaymentID(resultSet.getInt("paymentID"));
                 bookings.add(booking);
@@ -47,5 +47,9 @@ public class BookingDAL {
         }
 
         return bookings;
+    }
+
+    public boolean registerNewBooking(int userID, int sessionID, int roomID, int paymentID, String booking_date){
+        return false;
     }
 }
