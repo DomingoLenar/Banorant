@@ -136,8 +136,9 @@ public class Main implements Runnable {
                             if (sessionNo > 0 && sessionNo <= sessionList.size()) {
 
                                 System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
-                                Room room = celebrityFanService.getRoomByDate(sessionList.get(sessionNo - 1).getDate());
-                                System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID());
+                                int paymentID = celebrityFanService.getPaymentIDByUserID(user.getUserID());
+                                Room room = celebrityFanService.getRoomByFanAndPlayer(paymentID);
+                                System.out.println("Room name: " + room.getName());
 
                                 String fetchedDate = sessionList.get(sessionNo - 1).getDate();
 
@@ -347,7 +348,7 @@ public class Main implements Runnable {
 
                                         System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
                                         Room room = celebrityFanService.getRoomByDate(sessionList.get(sessionNo - 1).getDate());
-                                        System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID() );
+                                        System.out.println("Room name: " + room.getName());
 
                                         String fetchedDate = sessionList.get(sessionNo - 1).getDate();
 
