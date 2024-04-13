@@ -13,7 +13,7 @@ public interface CelebrityFanService extends Remote {
     boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) throws RemoteException;
     double getPlayerRateByPlayerID(int playerID) throws RemoteException;
     List<Session> getAcceptedSession(int userID) throws RemoteException;
-    boolean registerNewSession(int fanID, String date, int duration, boolean isCelebrity) throws RemoteException;
+    boolean registerNewSession(int fanID, String date, int duration) throws RemoteException;
     Room getRoomByFanAndPlayer(int paymentID) throws RemoteException;
     boolean registerNewRoom(String room_name, int paymentID, String date) throws RemoteException;
     List<Booking> fetchBookingByPaymentID(int paymentID) throws RemoteException;

@@ -41,8 +41,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-    public boolean registerNewSession(int fanID, String date, int duration, boolean isCelebrity) throws RemoteException {
-        return sessionDAL.registerNewSession(fanID, date, duration, isCelebrity);
+    public boolean registerNewSession(int fanID, String date, int duration) throws RemoteException {
+        return sessionDAL.registerNewSession(fanID, date, duration);
     }
 
     @Override

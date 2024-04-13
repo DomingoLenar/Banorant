@@ -217,9 +217,10 @@ public class Main implements Runnable {
                                     if (paymentAccepted) {
                                         // If payment registration is successful, register the session
                                         int userID = user.getUserID();
-                                        boolean sessionRegistered = celebrityFanService.registerNewSession(userID, date, duration, selectedPlayer.isCelebrity());
+                                        boolean sessionRegisteredForFan = celebrityFanService.registerNewSession(userID, date, duration);
+                                        boolean sessionRegisteredForPlayer = celebrityFanService.registerNewSession(selectedPlayer.getUserID(), date, duration);
 
-                                        if (sessionRegistered) {
+                                        if (sessionRegisteredForFan && sessionRegisteredForPlayer) {
                                             System.out.println("Session registered successfully.");
                                             String roomName = "meeting "+selectedPlayer.getUsername() +" "+user.getUsername();
                                             int paymentID = celebrityFanService.getPaymentIDByUserID(userID);
