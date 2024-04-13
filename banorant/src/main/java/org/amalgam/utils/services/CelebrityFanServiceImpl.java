@@ -85,5 +85,10 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
         return roomDAL.getRoomByDate(date);
     }
 
+    @Override
+    public int getPaymentIDbyDate(String date) throws RemoteException {
+        return paymentDAL.getPaymentIDByDate(date);
+    }
+
 
 }

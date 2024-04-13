@@ -104,4 +104,11 @@ public class DatabaseTester {
         RoomDAL roomDAL = new RoomDAL();
         System.out.println(roomDAL.getRoomByDate("2024-04-12 03:00:00").getName());
     }
+
+    @Test
+    public void testGetPaymentIDByDate(){
+        PaymentDAL paymentDAL = new PaymentDAL();
+        int paymentID = paymentDAL.getPaymentIDByDate("2024-04-13 14:10:00");
+        System.out.println(paymentID);
+    }
 }

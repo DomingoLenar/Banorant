@@ -23,4 +23,5 @@ public interface CelebrityFanService extends Remote {
 
     public int getRoomIDByPaymentID (int paymentID) throws RemoteException;
     Room getRoomByDate(String date) throws RemoteException;
+    int getPaymentIDbyDate(String date) throws RemoteException;
 }

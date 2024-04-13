@@ -210,7 +210,7 @@ public class Main implements Runnable {
                                     int duration = Integer.parseInt(kyb.nextLine());
 
                                     System.out.println("Payment processing...");
-                                    boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
+                                    boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()), date);
 
                                     if (paymentAccepted) {
                                         // If payment registration is successful, register the session
@@ -221,7 +221,7 @@ public class Main implements Runnable {
                                         if (sessionRegisteredForFan && sessionRegisteredForPlayer) {
                                             System.out.println("Session registered successfully.");
                                             String roomName = "meeting "+selectedPlayer.getUsername() +" "+user.getUsername();
-                                            int paymentID = celebrityFanService.getPaymentIDByUserID(userID);
+                                            int paymentID = celebrityFanService.getPaymentIDbyDate(date);
                                             boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID, date);
 
                                             if (roomRegistered){
@@ -488,7 +488,7 @@ public class Main implements Runnable {
     }
 
 
-    public boolean processPayment(User user, double playerRate) {
+    public boolean processPayment(User user, double playerRate, String date) {
         try {
 
             System.out.println("Enter the amount you will pay:");
@@ -499,7 +499,7 @@ public class Main implements Runnable {
                 return false;
             }
 
-            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), paymentAmount, Status.Accepted,getCurrentDateTime() );
+            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), paymentAmount, Status.Accepted, date );
             if (paymentRegistered) {
                 System.out.println("Payment registered successfully.");
                 return true;

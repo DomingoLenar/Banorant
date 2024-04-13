@@ -36,4 +36,19 @@ public class PaymentDAL {
         }
         return 0; // Return 0 if no payment ID found for the user ID
     }
+
+    public int getPaymentIDByDate(String date) {
+        try (Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT payment_id FROM payments WHERE payment_date = ?");
+            stmt.setString(1, date);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("payment_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0; // Return 0 if no payment ID found for the user ID
+    }
+
 }
