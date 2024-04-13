@@ -108,7 +108,8 @@ public class Main implements Runnable {
     }
 
     private void menuFan(User user) throws RemoteException {
-        while (true) {
+        boolean loop = true;
+        while (loop) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Session");
             System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability, this involves rate
@@ -135,8 +136,7 @@ public class Main implements Runnable {
                             if (sessionNo > 0 && sessionNo <= sessionList.size()) {
 
                                 System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
-                                int paymentId = celebrityFanService.getPaymentIDByUserID(user.getUserID());
-                                Room room = celebrityFanService.getRoomByFanAndPlayer(paymentId);
+                                Room room = celebrityFanService.getRoomByDate(sessionList.get(sessionNo - 1).getDate());
                                 System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID());
 
                                 String fetchedDate = sessionList.get(sessionNo - 1).getDate();
@@ -160,8 +160,7 @@ public class Main implements Runnable {
                                 });
                                 dateCheckingThread.start();
 
-
-                                while (true){
+                                while (true) {
                                     try {
                                         dateCheckingThread.join();
                                         while (true) {
@@ -305,11 +304,19 @@ public class Main implements Runnable {
                 default:
                     System.out.println("Invalid choice. Please choose a valid option.");
             }
+
+            System.out.println("Do you want to return to the main menu? (yes/no)");
+            String answer = kyb.nextLine().trim().toLowerCase();
+            if (!answer.equals("yes")) {
+                loop = false;
+            }
         }
     }
 
     private void menuCelebrity(User user) {
-        while (true) {
+        boolean loop = true;
+
+        while (loop) {
             System.out.println("Choose from the following options:");
             System.out.println("1. Session");
             System.out.println("2. Profile");
@@ -441,6 +448,12 @@ public class Main implements Runnable {
                     break;
                 default:
                     System.out.println("Invalid choice. Please choose a valid option.");
+            }
+
+            System.out.println("Do you want to return to the main menu? (yes/no)");
+            String answer = kyb.nextLine().trim().toLowerCase();
+            if (!answer.equals("yes")) {
+                loop = false;
             }
         }
     }
