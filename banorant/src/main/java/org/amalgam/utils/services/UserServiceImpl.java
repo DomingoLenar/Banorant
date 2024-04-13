@@ -35,8 +35,8 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
     public boolean updateUser(String username, String newPassword) throws RemoteException {
         try(Connection conn = DatabaseUtil.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement("UPDATE users SET password = ? WHERE username = ?");
-            stmt.setString(1, username);
-            stmt.setString(2, newPassword);
+            stmt.setString(1, newPassword);
+            stmt.setString(2, username);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {

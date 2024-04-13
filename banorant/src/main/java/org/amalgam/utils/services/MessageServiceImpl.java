@@ -15,8 +15,10 @@ public class MessageServiceImpl extends UnicastRemoteObject implements MessageSe
     @Override
     public void logSession(MessageCallback messageCallbackInter) throws RemoteException {
         users.add(messageCallbackInter);
+        System.out.println("Your session has started...");
         for(int x = 0; x<users.size();x++){
-            users.get(x).broadcastCall(messageCallbackInter.getUser()+ "Logged in...");
+            users.get(x).broadcastCall(messageCallbackInter.getUser()+ " logged in...");
+
         }
     }
 
