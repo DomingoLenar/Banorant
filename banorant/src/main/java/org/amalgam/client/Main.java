@@ -96,15 +96,13 @@ public class Main implements Runnable {
             } else {
                 System.out.println("Please input accordingly");
             }
-        } while (username == null || password == null);
+        } while (username == null || password == null || user == null);
 
-        if (user != null) {
-            boolean isCelebrity = user.isCelebrity();
-            if (isCelebrity) {
-                menuCelebrity(user);
-            } else {
-                menuFan(user);
-            }
+        boolean isCelebrity = user.isCelebrity();
+        if (isCelebrity) {
+            menuCelebrity(user);
+        } else {
+            menuFan(user);
         }
 
     }
@@ -450,6 +448,7 @@ public class Main implements Runnable {
     private void signin(){
         String username;
         String password;
+        boolean creation = false;
         do {
             System.out.println("Input username: ");
             username = kyb.nextLine();
@@ -458,7 +457,7 @@ public class Main implements Runnable {
 
             if (username != null && password != null) {
                 try {
-                    userService.createUser(username, password);
+                    creation = userService.createUser(username, password);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -466,6 +465,12 @@ public class Main implements Runnable {
                 System.out.println("Please input accordingly");
             }
         } while (username == null || password == null);
+
+        if (creation) {
+            System.out.println("Account is now created");
+        } else {
+            System.out.println("Error creating an account");
+        }
     }
 
 

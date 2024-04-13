@@ -41,7 +41,9 @@ public class DatabaseTester {
         try {
             Registry registry = LocateRegistry.getRegistry(1099);
             AuthenticationService authService = (AuthenticationService) registry.lookup("authService");
-            System.out.println(authService.authenticateUser("lou", "123").getUsername());
+            UserDAL userDAL = new UserDAL();
+//            System.out.println(authService.authenticateUser("lou", "123").getUsername());
+            System.out.println(userDAL.authenticateUser("lou", "123"));
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +95,7 @@ public class DatabaseTester {
     @Test
     public void testRegisterNewSession() {
         SessionDAL sessionDAL = new SessionDAL();
-        boolean valid = sessionDAL.registerNewSession(2, "2024-04-12 03:00:00", 60, true); // for player
+        boolean valid = sessionDAL.registerNewSession(2, "2024-04-12 03:00:00", 60); // for player
         System.out.println(valid);
     }
 
