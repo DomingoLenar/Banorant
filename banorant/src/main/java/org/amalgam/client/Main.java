@@ -12,11 +12,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
@@ -112,194 +110,20 @@ public class Main implements Runnable {
         while (loop) {
             System.out.println("Choose from the ff.");
             System.out.println("1. Session");
-            System.out.println("2. Players"); // prompt list of players -> then scheduling system correspond to celeb availability, this involves rate
-            System.out.println("3. Profile"); // common
+            System.out.println("2. Players");
+            System.out.println("3. Profile");
 
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice){
                 case 1:
-                    try {
-                        // Enter the session number, if user press any of the sessions number, then it will display that the fan entered the room
-                        List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
-                        if (sessionList.isEmpty()){
-                            System.out.println("No accepted sessions found");
-                        } else {
-                            System.out.println("List of sessions");
-                            for (int i=0; i<sessionList.size();i++){
-                                Session session = sessionList.get(i);
-                                System.out.println("Session Number("+ (i+1) + ") Date:" + session.getDate());
-                            }
-
-                            System.out.println("Enter the session number: ");
-                            int sessionNo = Integer.parseInt(kyb.nextLine());
-
-                            if (sessionNo > 0 && sessionNo <= sessionList.size()) {
-
-                                System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
-                                Room room = celebrityFanService.getRoomByDate(sessionList.get(sessionNo - 1).getDate());
-                                System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID());
-
-                                String fetchedDate = sessionList.get(sessionNo - 1).getDate();
-
-                                Thread dateCheckingThread = new Thread(() -> {
-                                    boolean sessionStarted = false;
-                                    while (!sessionStarted) {
-                                        if (getCurrentDateTime().equals(fetchedDate)) {
-                                            System.out.println("Session is started");
-                                            sessionStarted = true;
-                                            try {
-                                                messageCallback = new MessageCallbackImpl(user.getUsername());
-                                                messageService.logSession(messageCallback);
-                                                System.out.print("Type Message: ");
-
-                                            } catch (RemoteException e) {
-                                                throw new RuntimeException(e);
-                                            }
-                                        }
-                                    }
-                                });
-                                dateCheckingThread.start();
-
-                                while (true) {
-                                    try {
-                                        dateCheckingThread.join();
-                                        while (true) {
-                                            String input = kyb.nextLine();
-                                            messageService.broadcast(messageCallback, input);
-                                        }
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                            } else {
-                                System.out.println("Invalid session number");
-                            }
-
-                        }
-
-                    } catch (RemoteException e){
-                        e.printStackTrace();
-                    }
-
+                    sessionChoice(user);
                     break;
                 case 2:
-                    System.out.println("1. View Players");
-                    int playerChoice = Integer.parseInt(kyb.nextLine());
-                    if (playerChoice == 1) {
-                        try {
-                            List<User> listOfPlayers = userService.getPlayers();
-                            if (listOfPlayers.isEmpty()) {
-                                System.out.println("No players found.");
-                            } else {
-                                System.out.println("List of Players:");
-                                for (int i = 0; i < listOfPlayers.size(); i++) {
-                                    User player = listOfPlayers.get(i);
-                                    double playerRate = celebrityFanService.getPlayerRateByPlayerID(player.getUserID());
-                                    System.out.println((i + 1) + ". " + player.getUsername() + " Rate: " + playerRate);
-                                }
-                                System.out.println("Enter player number to select:");
-                                int selectedPlayerIndex = Integer.parseInt(kyb.nextLine()) - 1;
-                                if (selectedPlayerIndex >= 0 && selectedPlayerIndex < listOfPlayers.size()) {
-                                    User selectedPlayer = listOfPlayers.get(selectedPlayerIndex);
-                                    System.out.println("Creating session for player: " + selectedPlayer.getUsername());
-                                    System.out.println("Enter session date (YYYY-MM-DD-HH-MM-SS):");
-                                    String date = kyb.nextLine();
-                                    System.out.println("Enter session duration (in minutes):");
-                                    int duration = Integer.parseInt(kyb.nextLine());
-
-                                    System.out.println("Payment processing...");
-                                    boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
-
-                                    if (paymentAccepted) {
-                                        // If payment registration is successful, register the session
-                                        int userID = user.getUserID();
-                                        boolean sessionRegisteredForFan = celebrityFanService.registerNewSession(userID, date, duration);
-                                        boolean sessionRegisteredForPlayer = celebrityFanService.registerNewSession(selectedPlayer.getUserID(), date, duration);
-
-                                        if (sessionRegisteredForFan && sessionRegisteredForPlayer) {
-                                            System.out.println("Session registered successfully.");
-                                            String roomName = "meeting "+selectedPlayer.getUsername() +" "+user.getUsername();
-                                            int paymentID = celebrityFanService.getPaymentIDByUserID(userID);
-                                            boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID, date);
-
-                                            if (roomRegistered){
-                                                System.out.println("Room registered successfully.");
-
-                                                int sessionID = celebrityFanService.getSessionIDByUserID(user.getUserID());
-                                                int roomID = celebrityFanService.getRoomIDByPaymentID(paymentID);
-
-                                                boolean registerBooking = celebrityFanService.registerNewBooking(userID,sessionID,roomID,paymentID,date);
-
-                                                if (registerBooking){
-                                                    System.out.println("Booking registered successfully. ");
-                                                } else System.out.println("Failed to register booking");
-
-                                            } else System.out.println("Failed to register room. ");
-
-                                        } else {
-                                            System.out.println("Failed to register session.");
-                                        }
-                                    } else {
-                                        System.out.println("Failed to register payment.");
-                                    }
-                                } else {
-                                    System.out.println("Invalid player selection.");
-                                }
-                            }
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                    playersChoice(user);
                     break;
 
-
                 case 3:
-                    System.out.println("1. View Profile");
-                    System.out.println("2. Update Profile");
-                    System.out.println("3. Delete Profile");
-
-                    int profileChoice = Integer.parseInt(kyb.nextLine());
-                    switch (profileChoice) {
-                        case 1:
-                            //To put logic later
-                            break;
-
-                        case 2:
-                            System.out.println("Enter new password:");
-                            String newPassword = kyb.nextLine();
-                            try {
-                                boolean updated = userService.updateUser(user.getUsername(), newPassword);
-                                if (updated) {
-                                    System.out.println("Profile updated successfully.");
-                                } else {
-                                    System.out.println("Failed to update profile.");
-                                }
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
-                            }
-                            break;
-                        case 3:
-                            System.out.println("Are you sure you want to delete your profile? (Y/N)");
-                            String confirm = kyb.nextLine().toLowerCase();
-                            if (confirm.equals("y")) {
-                                try {
-                                    boolean deleted = userService.deleteUser(user.getUsername());
-                                    if (deleted) {
-                                        System.out.println("Profile deleted successfully.");
-                                    } else {
-                                        System.out.println("Failed to delete profile.");
-                                    }
-                                } catch (RemoteException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            } else {
-                                System.out.println("Profile deletion cancelled.");
-                            }
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please choose a valid option for profile.");
-                    }
+                    profileManagementFan(user);
                     break;
                 default:
                     System.out.println("Invalid choice. Please choose a valid option.");
@@ -324,128 +148,14 @@ public class Main implements Runnable {
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice) {
                 case 1:
-                    System.out.println("1. View Sessions");
-                    System.out.println("2. Update Session");
-                    int scheduleChoice = Integer.parseInt(kyb.nextLine());
-                    switch (scheduleChoice) {
-                        case 1:
-                            try {
-                                List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
-                                if (sessionList.isEmpty()){
-                                    System.out.println("No accepted sessions found");
-                                } else {
-                                    System.out.println("List of sessions");
-                                    for (int i=0; i<sessionList.size();i++){
-                                        Session session = sessionList.get(i);
-                                        System.out.println("Session Number("+ (i+1) + ") Date:" + session.getDate());
-                                    }
 
-                                    System.out.println("Enter the session number: ");
-                                    int sessionNo = Integer.parseInt(kyb.nextLine());
-
-                                    if (sessionNo > 0 && sessionNo <= sessionList.size()) {
-
-                                        System.out.println("You have entered the session: " + sessionList.get(sessionNo - 1).getSessionID());
-                                        Room room = celebrityFanService.getRoomByDate(sessionList.get(sessionNo - 1).getDate());
-                                        System.out.println("Room name: " + room.getName() + "\nRoom ID:" +room.getRoomID() );
-
-                                        String fetchedDate = sessionList.get(sessionNo - 1).getDate();
-
-                                        Thread dateCheckingThread = new Thread(() -> {
-                                                boolean sessionStarted = false;
-                                                while (!sessionStarted) {
-                                                    if (getCurrentDateTime().equals(fetchedDate)) {
-                                                        System.out.println("Session is started");
-                                                        sessionStarted = true;
-                                                        try {
-                                                            messageCallback = new MessageCallbackImpl(user.getUsername());
-                                                            messageService.logSession(messageCallback);
-                                                            System.out.print("Type Message: ");
-
-                                                        } catch (RemoteException e) {
-                                                            throw new RuntimeException(e);
-                                                        }
-                                                    }
-                                                }
-                                            });
-                                            dateCheckingThread.start();
-
-                                        while (true){
-                                            try {
-                                                dateCheckingThread.join();
-                                                while (true) {
-                                                    String input = kyb.nextLine();
-                                                    messageService.broadcast(messageCallback, input);
-                                                }
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                    } else {
-                                        System.out.println("Invalid session number");
-                                    }
-
-                                }
-
-                            } catch (RemoteException e){
-                                e.printStackTrace();
-                            }
-                            break;
-                        case 2:
-                            // To put logic later
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please choose a valid option for schedule.");
-                    }
+                    sessionChoice(user);
                     break;
+
                 case 2:
-                    System.out.println("1. View Profile");
-                    System.out.println("2. Update Password");
-                    System.out.println("3. Delete Profile");
-
-                    int profileChoice = Integer.parseInt(kyb.nextLine());
-                    switch (profileChoice) {
-                        case 1:
-                            //To put logic later
-
-                        case 2:
-                            System.out.println("Enter new password:");
-                            String newPassword = kyb.nextLine();
-                            try {
-                                boolean updated = userService.updateUser(user.getUsername(), newPassword);
-                                if (updated) {
-                                    System.out.println("Profile updated successfully.");
-                                } else {
-                                    System.out.println("Failed to update profile.");
-                                }
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);
-                            }
-                            break;
-                        case 3:
-                            System.out.println("Are you sure you want to delete your profile? (Y/N)");
-                            String confirm = kyb.nextLine().toLowerCase();
-                            if (confirm.equals("y")) {
-                                try {
-                                    boolean deleted = userService.deleteUser(user.getUsername());
-                                    if (deleted) {
-                                        System.out.println("Profile deleted successfully.");
-
-                                    } else {
-                                        System.out.println("Failed to delete profile.");
-                                    }
-                                } catch (RemoteException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            } else {
-                                System.out.println("Profile deletion cancelled.");
-                            }
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please choose a valid option for profile.");
-                    }
+                    profileManagementCeleb(user);
                     break;
+
                 default:
                     System.out.println("Invalid choice. Please choose a valid option.");
             }
@@ -487,6 +197,155 @@ public class Main implements Runnable {
     }
 
 
+    public void sessionChoice(User user) {
+        try {
+            List<Session> sessionList = celebrityFanService.getAcceptedSession(user.getUserID());
+
+            if (sessionList.isEmpty()) {
+                System.out.println("No accepted sessions found");
+                return;
+            }
+
+            displaySessions(sessionList);
+
+            int selectedSessionIndex = getSelectedSessionIndex(sessionList.size());
+
+            if (isValidSessionSelection(selectedSessionIndex, sessionList.size())) {
+                handleSessionEntry(user, sessionList.get(selectedSessionIndex));
+            } else {
+                System.out.println("Invalid session number");
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void playersChoice(User user) {
+        System.out.println("1. View Players");
+        int playerChoice = Integer.parseInt(kyb.nextLine());
+
+        if (playerChoice == 1) {
+            try {
+                List<User> listOfPlayers = userService.getPlayers();
+
+                if (listOfPlayers.isEmpty()) {
+                    System.out.println("No players found.");
+                    return;
+                }
+
+                displayPlayers(listOfPlayers);
+
+                int selectedPlayerIndex = getSelectedPlayerIndex(listOfPlayers.size());
+
+                if (isValidSelection(selectedPlayerIndex, listOfPlayers.size())) {
+                    User selectedPlayer = listOfPlayers.get(selectedPlayerIndex);
+                    handleSessionCreation(user, selectedPlayer);
+                } else {
+                    System.out.println("Invalid player selection.");
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+    public void profileManagementFan(User user){
+        System.out.println("1. Update Profile");
+        System.out.println("2. Delete Profile");
+
+        int profileChoice = Integer.parseInt(kyb.nextLine());
+        switch (profileChoice) {
+
+            case 1:
+                System.out.println("Enter new password:");
+                String newPassword = kyb.nextLine();
+                try {
+                    boolean updated = userService.updateUser(user.getUsername(), newPassword);
+                    if (updated) {
+                        System.out.println("Profile updated successfully.");
+                    } else {
+                        System.out.println("Failed to update profile.");
+                    }
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case 2:
+                System.out.println("Are you sure you want to delete your profile? (Y/N)");
+                String confirm = kyb.nextLine().toLowerCase();
+                if (confirm.equals("y")) {
+                    try {
+                        boolean deleted = userService.deleteUser(user.getUsername());
+                        if (deleted) {
+                            System.out.println("Profile deleted successfully.");
+                        } else {
+                            System.out.println("Failed to delete profile.");
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    System.out.println("Profile deletion cancelled.");
+                }
+                break;
+            default:
+                System.out.println("Invalid choice. Please choose a valid option for profile.");
+        }
+
+
+    }
+
+    public void profileManagementCeleb(User user){
+        System.out.println("1. View Profile");
+        System.out.println("2. Update Password");
+        System.out.println("3. Delete Profile");
+
+        int profileChoice = Integer.parseInt(kyb.nextLine());
+        switch (profileChoice) {
+            case 1:
+
+                break;
+            case 2:
+                System.out.println("Enter new password:");
+                String newPassword = kyb.nextLine();
+                try {
+                    boolean updated = userService.updateUser(user.getUsername(), newPassword);
+                    if (updated) {
+                        System.out.println("Profile updated successfully.");
+                    } else {
+                        System.out.println("Failed to update profile.");
+                    }
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case 3:
+                System.out.println("Are you sure you want to delete your profile? (Y/N)");
+                String confirm = kyb.nextLine().toLowerCase();
+                if (confirm.equals("y")) {
+                    try {
+                        boolean deleted = userService.deleteUser(user.getUsername());
+                        if (deleted) {
+                            System.out.println("Profile deleted successfully.");
+
+                        } else {
+                            System.out.println("Failed to delete profile.");
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    System.out.println("Profile deletion cancelled.");
+                }
+                break;
+            default:
+                System.out.println("Invalid choice. Please choose a valid option for profile.");
+        }
+    }
+
     public boolean processPayment(User user, double playerRate) {
         try {
 
@@ -517,4 +376,142 @@ public class Main implements Runnable {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return currentDateTime.format(formatter);
     }
+
+    private void displayPlayers(List<User> listOfPlayers) throws RemoteException {
+        System.out.println("List of Players:");
+        for (int i = 0; i < listOfPlayers.size(); i++) {
+            User player = listOfPlayers.get(i);
+            double playerRate = celebrityFanService.getPlayerRateByPlayerID(player.getUserID());
+            System.out.println((i + 1) + ". " + player.getUsername() + " Rate: " + playerRate);
+        }
+    }
+
+    private int getSelectedPlayerIndex(int maxIndex) {
+        System.out.println("Enter player number to select:");
+        return Integer.parseInt(kyb.nextLine()) - 1;
+    }
+
+    private boolean isValidSelection(int index, int maxSize) {
+        return index >= 0 && index < maxSize;
+    }
+
+    private void handleSessionCreation(User user, User selectedPlayer) throws RemoteException {
+        System.out.println("Creating session for player: " + selectedPlayer.getUsername());
+
+        String date = getDateTimeInput("Enter session date (YYYY-MM-DD-HH-MM-SS):");
+        int duration = getDurationInput("Enter session duration (in minutes):");
+
+        boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
+
+        if (paymentAccepted) {
+            registerSession(user, selectedPlayer, date, duration);
+        } else {
+            System.out.println("Failed to register payment.");
+        }
+    }
+
+    private String getDateTimeInput(String prompt) {
+        System.out.println(prompt);
+        return kyb.nextLine();
+    }
+
+    private int getDurationInput(String prompt) {
+        System.out.println(prompt);
+        return Integer.parseInt(kyb.nextLine());
+    }
+
+    private void registerSession(User user, User selectedPlayer, String date, int duration) throws RemoteException {
+        int userID = user.getUserID();
+        boolean sessionRegisteredForFan = celebrityFanService.registerNewSession(userID, date, duration);
+        boolean sessionRegisteredForPlayer = celebrityFanService.registerNewSession(selectedPlayer.getUserID(), date, duration);
+
+        if (sessionRegisteredForFan && sessionRegisteredForPlayer) {
+            registerRoomAndBooking(user, selectedPlayer, date);
+        } else {
+            System.out.println("Failed to register session.");
+        }
+    }
+
+    private void registerRoomAndBooking(User user, User selectedPlayer, String date) throws RemoteException {
+        System.out.println("Payment processing...");
+
+        String roomName = "meeting " + selectedPlayer.getUsername() + " " + user.getUsername();
+        int paymentID = celebrityFanService.getPaymentIDByUserID(user.getUserID());
+
+        boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID, date);
+
+        if (roomRegistered) {
+            int sessionID = celebrityFanService.getSessionIDByUserID(user.getUserID());
+            int roomID = celebrityFanService.getRoomIDByPaymentID(paymentID);
+
+            boolean registerBooking = celebrityFanService.registerNewBooking(user.getUserID(), sessionID, roomID, paymentID, date);
+
+            if (registerBooking) {
+                System.out.println("Booking registered successfully.");
+            } else {
+                System.out.println("Failed to register booking.");
+            }
+        } else {
+            System.out.println("Failed to register room.");
+        }
+    }
+
+
+    private void displaySessions(List<Session> sessionList) {
+        System.out.println("List of sessions");
+        for (int i = 0; i < sessionList.size(); i++) {
+            Session session = sessionList.get(i);
+            System.out.println("Session Number(" + (i + 1) + ") Date:" + session.getDate());
+        }
+    }
+
+    private int getSelectedSessionIndex(int maxIndex) {
+        System.out.println("Enter the session number: ");
+        return Integer.parseInt(kyb.nextLine()) - 1;
+    }
+
+    private boolean isValidSessionSelection(int index, int maxSize) {
+        return index >= 0 && index < maxSize;
+    }
+
+    private void handleSessionEntry(User user, Session selectedSession) throws RemoteException {
+        System.out.println("You have entered the session: " + selectedSession.getSessionID());
+
+        Room room = celebrityFanService.getRoomByDate(selectedSession.getDate());
+        System.out.println("Room name: " + room.getName() + "\nRoom ID:" + room.getRoomID());
+
+        String fetchedDate = selectedSession.getDate();
+
+        Thread dateCheckingThread = new Thread(() -> {
+            boolean sessionStarted = false;
+            while (!sessionStarted) {
+                if (getCurrentDateTime().equals(fetchedDate)) {
+                    System.out.println("Session is started");
+                    sessionStarted = true;
+                    try {
+                        messageCallback = new MessageCallbackImpl(user.getUsername());
+                        messageService.logSession(messageCallback);
+                        System.out.print("Type Message: ");
+
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        dateCheckingThread.start();
+
+        while (true) {
+            try {
+                dateCheckingThread.join();
+                while (true) {
+                    String input = kyb.nextLine();
+                    messageService.broadcast(messageCallback, input);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

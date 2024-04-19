@@ -18,6 +18,13 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
         super();
         this.userDAL = new UserDAL();
     }
+
+
+    @Override
+    public boolean getUserCredentials(int userID) throws RemoteException {
+        return userDAL.getUserCredentials(userID);
+    }
+
     @Override
     public boolean createUser(String username, String password) throws RemoteException {
         try(Connection conn = DatabaseUtil.getConnection()) {
