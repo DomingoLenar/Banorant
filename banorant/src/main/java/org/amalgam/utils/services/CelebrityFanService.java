@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface CelebrityFanService extends Remote {
+    boolean getUserCredentials(int userID) throws RemoteException;
     boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) throws RemoteException;
     double getPlayerRateByPlayerID(int playerID) throws RemoteException;
     List<Session> getAcceptedSession(int userID) throws RemoteException;

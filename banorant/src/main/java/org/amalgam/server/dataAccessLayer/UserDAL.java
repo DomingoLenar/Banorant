@@ -74,18 +74,6 @@ public class UserDAL {
         return players;
     }
 
-    public boolean getUserCredentials(int userID) {
-
-        try (Connection conn = DatabaseUtil.getConnection()){
-            PreparedStatement stmt = conn.prepareStatement("");
-
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return false;
-    }
 
 
 }

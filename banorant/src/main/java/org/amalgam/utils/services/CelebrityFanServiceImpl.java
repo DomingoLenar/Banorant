@@ -16,6 +16,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     private RateDAL rateDAL;
     private RoomDAL roomDAL;
     private SessionDAL sessionDAL;
+
+    private AvailabilityDAL availabilityDAL;
     public CelebrityFanServiceImpl() throws RemoteException {
         // inject instances of dal objects
         bookingDAL = new BookingDAL();
@@ -23,6 +25,11 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
         rateDAL = new RateDAL();
         roomDAL = new RoomDAL();
         sessionDAL = new SessionDAL();
+    }
+
+    @Override
+    public boolean getUserCredentials(int userID) throws RemoteException {
+        return availabilityDAL.getUserCredentials(userID);
     }
 
     @Override

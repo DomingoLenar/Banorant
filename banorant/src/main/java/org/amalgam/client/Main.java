@@ -148,7 +148,6 @@ public class Main implements Runnable {
             int choice = Integer.parseInt(kyb.nextLine());
             switch (choice) {
                 case 1:
-
                     sessionChoice(user);
                     break;
 
@@ -306,6 +305,13 @@ public class Main implements Runnable {
         int profileChoice = Integer.parseInt(kyb.nextLine());
         switch (profileChoice) {
             case 1:
+
+                try {
+                    System.out.println("User profile: "+user.getUsername());
+                    celebrityFanService.getUserCredentials(user.getUserID());
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
 
                 break;
             case 2:
