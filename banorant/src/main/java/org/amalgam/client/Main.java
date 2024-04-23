@@ -340,8 +340,10 @@ public class Main implements Runnable {
 
             case 3:
                 editAvailability (user);
+                break;
             case 4:
                 createAvailability(user);
+                break;
             case 5:
                 System.out.println("Are you sure you want to delete your profile? (Y/N)");
                 String confirm = kyb.nextLine().toLowerCase();
