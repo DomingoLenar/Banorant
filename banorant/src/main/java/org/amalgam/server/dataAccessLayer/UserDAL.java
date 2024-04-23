@@ -75,6 +75,16 @@ public class UserDAL {
         return players;
     }
 
+    /**
+     * Method is used to delete a user based on either id or username, provide only on of each. If you will use this to
+     * delete based on username, set the parameter of id to -1 otherwise set username to null and have id be a value
+     * greater than 0
+     *
+     * @param id            id of username
+     * @param username      username of the user
+     * @return              boolean, true if the query is successful
+     * @throws InvalidParameterException    thrown parameter usage is invalid
+     */
     public boolean deleteUser(int id, String username) throws InvalidParameterException {
         try(Connection conn = DatabaseUtil.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE ? = ?");
@@ -84,11 +94,14 @@ public class UserDAL {
             } else if (id>0){
                 stmt.setString(1, "user_id");
                 stmt.setInt(2, id);
+            } else{
+                throw new InvalidParameterException("Invalid Parameter please refer to documentation of this method");
             }
+            stmt.executeQuery();
+            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return false;
     }
 
 
