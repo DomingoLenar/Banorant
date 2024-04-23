@@ -1,15 +1,18 @@
-package org.amalgam.utils.services;
+package org.amalgam.server.servicesImpl;
 
+import com.google.gson.*;
 import org.amalgam.server.dataAccessLayer.DatabaseUtil;
 import org.amalgam.server.dataAccessLayer.UserDAL;
 import org.amalgam.utils.models.User;
+import org.amalgam.utils.services.UserService;
 
-import java.io.Serializable;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 public class UserServiceImpl extends UnicastRemoteObject implements UserService, Serializable {
@@ -46,16 +49,11 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
         }
     }
 
+    //Admin will call this to delete a user
+    // TODO:Custom Exception for role checking, not done in this case because this is just a crude prototype to show CRUD requests
     @Override
     public boolean deleteUser(String username) throws RemoteException {
-        try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE username = ?");
-            stmt.setString(1, username);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return userDAL.deleteUser(-1,username);
     }
 
     @Override
