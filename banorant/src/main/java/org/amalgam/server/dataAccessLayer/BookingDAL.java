@@ -28,7 +28,7 @@ public class BookingDAL {
 
             while (resultSet.next()) {
                 Booking booking = new Booking();
-                booking.setRoomID(resultSet.getInt("roomID"));
+                booking.setAvailabilityID(resultSet.getInt("roomID"));
                 booking.setSessionID(resultSet.getInt("scheduleID"));
                 booking.setUserID(resultSet.getInt("userID"));
                 booking.setPaymentID(resultSet.getInt("paymentID"));

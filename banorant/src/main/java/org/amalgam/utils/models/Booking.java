@@ -6,7 +6,7 @@ public class Booking implements Serializable {
     private int bookingID;
     private int userID;
     private int sessionID;
-    private int roomID;
+    private int availabilityID;
     private int paymentID;
     private String bookingDate; // format of date is 'YYYY-MM-DD HH:MM:SS'
 
@@ -14,11 +14,11 @@ public class Booking implements Serializable {
 
     }
 
-    public Booking(int bookingID, int userID, int sessionID, int roomID, int paymentID, String bookingDate) {
+    public Booking(int bookingID, int userID, int sessionID, int availabilityID, int paymentID, String bookingDate) {
         this.bookingID = bookingID;
         this.userID = userID;
         this.sessionID = sessionID;
-        this.roomID = roomID;
+        this.availabilityID = availabilityID;
         this.paymentID = paymentID;
         this.bookingDate = bookingDate;
     }
@@ -47,12 +47,12 @@ public class Booking implements Serializable {
         this.sessionID = sessionID;
     }
 
-    public int getRoomID() {
-        return roomID;
+    public int getAvailabilityID() {
+        return availabilityID;
     }
 
-    public void setRoomID(int roomID) {
-        this.roomID = roomID;
+    public void setAvailabilityID(int availabilityID) {
+        this.availabilityID = availabilityID;
     }
 
     public int getPaymentID() {

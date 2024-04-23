@@ -2,7 +2,6 @@ package org.amalgam.client;
 
 import org.amalgam.client.messaging.MessageCallbackImpl;
 import org.amalgam.utils.Status;
-import org.amalgam.utils.models.Room;
 import org.amalgam.utils.models.Session;
 import org.amalgam.utils.services.*;
 import org.amalgam.utils.Binder;
@@ -15,18 +14,20 @@ import java.rmi.registry.Registry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
 
 // todo: use messaging service if fan(session) == player(session) where payment element of session and iff payment == accepted
+// todo: fix the user interaction of a fan and player
 public class Main implements Runnable {
     private UserService userService;
     private AuthenticationService authService;
     private MessageService messageService;
     private CelebrityFanService celebrityFanService;
-    private final Scanner kyb = new Scanner(System.in);
     private MessageCallbackImpl messageCallback;
+    private final Scanner kyb = new Scanner(System.in);
 
     public static void main(String[] args) {
         Main main = new Main();
@@ -121,7 +122,6 @@ public class Main implements Runnable {
                 case 2:
                     playersChoice(user);
                     break;
-
                 case 3:
                     profileManagementFan(user);
                     break;
@@ -387,8 +387,8 @@ public class Main implements Runnable {
         System.out.println("List of Players:");
         for (int i = 0; i < listOfPlayers.size(); i++) {
             User player = listOfPlayers.get(i);
-            double playerRate = celebrityFanService.getPlayerRateByPlayerID(player.getUserID());
-            System.out.println((i + 1) + ". " + player.getUsername() + " Rate: " + playerRate);
+//            double playerRate = celebrityFanService.getPlayerRateByPlayerID(player.getUserID());
+//            System.out.println((i + 1) + ". " + player.getUsername() + " Rate: " + playerRate);
         }
     }
 
@@ -407,13 +407,13 @@ public class Main implements Runnable {
         String date = getDateTimeInput("Enter session date (YYYY-MM-DD-HH-MM-SS):");
         int duration = getDurationInput("Enter session duration (in minutes):");
 
-        boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
-
-        if (paymentAccepted) {
-            registerSession(user, selectedPlayer, date, duration);
-        } else {
-            System.out.println("Failed to register payment.");
-        }
+//        boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
+//
+//        if (paymentAccepted) {
+//            registerSession(user, selectedPlayer, date, duration);
+//        } else {
+//            System.out.println("Failed to register payment.");
+//        }
     }
 
     private String getDateTimeInput(String prompt) {
@@ -444,22 +444,15 @@ public class Main implements Runnable {
         String roomName = "meeting " + selectedPlayer.getUsername() + " " + user.getUsername();
         int paymentID = celebrityFanService.getPaymentIDByUserID(user.getUserID());
 
-        boolean roomRegistered = celebrityFanService.registerNewRoom(roomName, paymentID, date);
+        int sessionID = celebrityFanService.getSessionIDByUserID(user.getUserID());
 
-        if (roomRegistered) {
-            int sessionID = celebrityFanService.getSessionIDByUserID(user.getUserID());
-            int roomID = celebrityFanService.getRoomIDByPaymentID(paymentID);
+//        boolean registerBooking = celebrityFanService.registerNewBooking(user.getUserID(), sessionID, availabilityID, paymentID, date);
+//        if (registerBooking) {
+//            System.out.println("Booking registered successfully.");
+//        } else {
+//            System.out.println("Failed to register booking.");
+//        }
 
-            boolean registerBooking = celebrityFanService.registerNewBooking(user.getUserID(), sessionID, roomID, paymentID, date);
-
-            if (registerBooking) {
-                System.out.println("Booking registered successfully.");
-            } else {
-                System.out.println("Failed to register booking.");
-            }
-        } else {
-            System.out.println("Failed to register room.");
-        }
     }
 
 
@@ -483,9 +476,6 @@ public class Main implements Runnable {
     private void handleSessionEntry(User user, Session selectedSession) throws RemoteException {
         System.out.println("You have entered the session: " + selectedSession.getSessionID());
 
-        Room room = celebrityFanService.getRoomByDate(selectedSession.getDate());
-        System.out.println("Room name: " + room.getName() + "\nRoom ID:" + room.getRoomID());
-
         String fetchedDate = selectedSession.getDate();
 
         Thread dateCheckingThread = new Thread(() -> {
@@ -497,7 +487,6 @@ public class Main implements Runnable {
                     try {
                         messageCallback = new MessageCallbackImpl(user.getUsername());
                         messageService.logSession(messageCallback);
-                        System.out.print("Type Message: ");
 
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
@@ -511,8 +500,13 @@ public class Main implements Runnable {
             try {
                 dateCheckingThread.join();
                 while (true) {
+                    System.out.print("Type Message: ");
                     String input = kyb.nextLine();
-                    messageService.broadcast(messageCallback, input);
+                    if (input.equalsIgnoreCase("exit")) {
+                        messageService.logout(messageCallback);
+                    } else {
+                        messageService.broadcast(messageCallback, input);
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

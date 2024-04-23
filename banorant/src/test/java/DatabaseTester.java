@@ -1,6 +1,5 @@
 import org.amalgam.server.dataAccessLayer.*;
 import org.amalgam.utils.Status;
-import org.amalgam.utils.models.Rate;
 import org.amalgam.utils.models.Session;
 import org.amalgam.utils.models.User;
 import org.amalgam.utils.services.AuthenticationService;
@@ -80,9 +79,6 @@ public class DatabaseTester {
 
     @Test
     public void testGetPlayerRateByPlayerID() {
-        RateDAL rateDAL = new RateDAL();
-        double rate = rateDAL.getPlayerRateByPlayerID(2);
-        System.out.println(rate);
     }
 
     @Test
@@ -97,11 +93,5 @@ public class DatabaseTester {
         SessionDAL sessionDAL = new SessionDAL();
         boolean valid = sessionDAL.registerNewSession(2, "2024-04-12 03:00:00", 60); // for player
         System.out.println(valid);
-    }
-
-    @Test
-    public void testGetRoomByDate() {
-        RoomDAL roomDAL = new RoomDAL();
-        System.out.println(roomDAL.getRoomByDate("2024-04-12 03:00:00").getName());
     }
 }

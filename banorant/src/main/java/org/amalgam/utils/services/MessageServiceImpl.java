@@ -28,4 +28,9 @@ public class MessageServiceImpl extends UnicastRemoteObject implements MessageSe
             users.get(x).broadcastCall(messageCallback.getUser()+": "+msg);
         }
     }
+
+    @Override
+    public void logout(MessageCallback messageCallback) throws RemoteException {
+        users.remove(messageCallback); // removes the instance of message callback of a user
+    }
 }

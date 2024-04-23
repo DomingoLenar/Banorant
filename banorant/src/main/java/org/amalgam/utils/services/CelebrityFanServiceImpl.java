@@ -3,7 +3,6 @@ package org.amalgam.utils.services;
 import org.amalgam.server.dataAccessLayer.*;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Booking;
-import org.amalgam.utils.models.Room;
 import org.amalgam.utils.models.Session;
 
 import java.rmi.RemoteException;
@@ -13,18 +12,14 @@ import java.util.List;
 public class CelebrityFanServiceImpl extends UnicastRemoteObject implements CelebrityFanService {
     private BookingDAL bookingDAL;
     private PaymentDAL paymentDAL;
-    private RateDAL rateDAL;
-    private RoomDAL roomDAL;
     private SessionDAL sessionDAL;
-
     private AvailabilityDAL availabilityDAL;
     public CelebrityFanServiceImpl() throws RemoteException {
         // inject instances of dal objects
         bookingDAL = new BookingDAL();
         paymentDAL = new PaymentDAL();
-        rateDAL = new RateDAL();
-        roomDAL = new RoomDAL();
         sessionDAL = new SessionDAL();
+        availabilityDAL = new AvailabilityDAL();
     }
 
     @Override
@@ -38,11 +33,6 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-    public double getPlayerRateByPlayerID(int playerID) throws RemoteException {
-        return rateDAL.getPlayerRateByPlayerID(playerID);
-    }
-
-    @Override
     public List<Session> getAcceptedSession(int userID) throws RemoteException {
         return sessionDAL.getAcceptedSession(userID);
     }
@@ -50,16 +40,6 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     @Override
     public boolean registerNewSession(int fanID, String date, int duration) throws RemoteException {
         return sessionDAL.registerNewSession(fanID, date, duration);
-    }
-
-    @Override
-    public Room getRoomByFanAndPlayer(int paymentID) throws RemoteException {
-        return roomDAL.getRoomByFanAndPlayer(paymentID);
-    }
-
-    @Override
-    public boolean registerNewRoom(String room_name, int paymentID, String date) throws RemoteException {
-        return roomDAL.registerNewRoom(room_name,paymentID,date);
     }
 
     @Override
@@ -81,16 +61,5 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     public int getSessionIDByUserID(int userID) throws RemoteException {
        return sessionDAL.getSessionIDByUserID(userID);
     }
-
-    @Override
-    public int getRoomIDByPaymentID(int paymentID) throws RemoteException {
-        return roomDAL.getRoomIDByPaymentID(paymentID);
-    }
-
-    @Override
-    public Room getRoomByDate(String date) throws RemoteException {
-        return roomDAL.getRoomByDate(date);
-    }
-
 
 }
