@@ -1,4 +1,4 @@
-package org.amalgam.client.messaging;
+package org.amalgam.client.callbacks;
 
 import org.amalgam.utils.services.MessageCallback;
 
