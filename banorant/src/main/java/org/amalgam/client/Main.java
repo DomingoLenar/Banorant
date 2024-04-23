@@ -1,6 +1,6 @@
 package org.amalgam.client;
 
-import org.amalgam.client.messaging.MessageCallbackImpl;
+import org.amalgam.client.callbacks.MessageCallbackImpl;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Session;
 import org.amalgam.utils.services.*;
@@ -14,7 +14,6 @@ import java.rmi.registry.Registry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
