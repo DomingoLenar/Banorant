@@ -1,6 +1,6 @@
 package org.amalgam.client;
 
-import org.amalgam.client.messaging.MessageCallbackImpl;
+import org.amalgam.client.callbacks.MessageCallbackImpl;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Availability;
 import org.amalgam.utils.models.Session;
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
@@ -522,7 +521,7 @@ public class Main implements Runnable {
                     if (input.equalsIgnoreCase("exit")) {
                         messageService.logout(messageCallback);
                     } else {
-                        messageService.broadcast(messageCallback, input);
+                        messageService.broadcast(messageCallback, messageCallback.getUser() + " has left the chat");
                     }
                 }
             } catch (InterruptedException e) {

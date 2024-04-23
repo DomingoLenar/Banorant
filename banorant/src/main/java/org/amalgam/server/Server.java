@@ -1,5 +1,7 @@
 package org.amalgam.server;
 
+import org.amalgam.server.servicesImpl.MessageServiceImpl;
+import org.amalgam.server.servicesImpl.UserServiceImpl;
 import org.amalgam.utils.services.*;
 import org.amalgam.utils.Binder;
 
