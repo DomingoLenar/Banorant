@@ -4,17 +4,35 @@ public class Availability {
 
     private int availabilityID;
     private int playerID;
-    private String availabilityDate;
-    private boolean availability;
+    private String availabilityDate; // Format: YYYY/MM/DD
+    private String startTime; // Format: HH/MM/SS
+    private String endTime; //Format: HH/MM/SS
     private double ratePerHour;
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
     public Availability(){}
 
-    public Availability(int availabilityID, int playerID, String availabilityDate, boolean availability, double ratePerHour) {
+    public Availability(int availabilityID, int playerID, String availabilityDate, String startTime, String endTime, double ratePerHour) {
         this.availabilityID = availabilityID;
         this.playerID = playerID;
         this.availabilityDate = availabilityDate;
-        this.availability = availability;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.ratePerHour = ratePerHour;
     }
 
@@ -40,14 +58,6 @@ public class Availability {
 
     public void setAvailabilityDate(String availabilityDate) {
         this.availabilityDate = availabilityDate;
-    }
-
-    public boolean isAvailability() {
-        return availability;
-    }
-
-    public void setAvailability(boolean availability) {
-        this.availability = availability;
     }
 
     public double getRatePerHour() {

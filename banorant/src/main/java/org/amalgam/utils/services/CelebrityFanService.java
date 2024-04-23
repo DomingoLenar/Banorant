@@ -1,6 +1,7 @@
 package org.amalgam.utils.services;
 
 import org.amalgam.utils.Status;
+import org.amalgam.utils.models.Availability;
 import org.amalgam.utils.models.Booking;
 import org.amalgam.utils.models.Session;
 
@@ -19,4 +20,5 @@ public interface CelebrityFanService extends Remote {
     boolean registerNewBooking(int userID, int sessionID, int availabilityID, int paymentID, String booking_date) throws RemoteException;
     public int getSessionIDByUserID (int userID) throws RemoteException;
 
+    public List<Availability> getAvailabilityByUserID(int userId) throws RemoteException;
 }

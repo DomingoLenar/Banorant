@@ -2,6 +2,7 @@ package org.amalgam.utils.services;
 
 import org.amalgam.server.dataAccessLayer.*;
 import org.amalgam.utils.Status;
+import org.amalgam.utils.models.Availability;
 import org.amalgam.utils.models.Booking;
 import org.amalgam.utils.models.Session;
 
@@ -61,5 +62,11 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     public int getSessionIDByUserID(int userID) throws RemoteException {
        return sessionDAL.getSessionIDByUserID(userID);
     }
+
+    @Override
+    public List<Availability> getAvailabilityByUserID(int userId) throws RemoteException {
+        return  availabilityDAL.getAvailabilityByUserID(userId);
+    }
+
 
 }

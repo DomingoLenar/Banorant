@@ -2,6 +2,7 @@ package org.amalgam.client;
 
 import org.amalgam.client.messaging.MessageCallbackImpl;
 import org.amalgam.utils.Status;
+import org.amalgam.utils.models.Availability;
 import org.amalgam.utils.models.Session;
 import org.amalgam.utils.services.*;
 import org.amalgam.utils.Binder;
@@ -12,6 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -240,7 +242,8 @@ public class Main implements Runnable {
 
                 if (isValidSelection(selectedPlayerIndex, listOfPlayers.size())) {
                     User selectedPlayer = listOfPlayers.get(selectedPlayerIndex);
-                    handleSessionCreation(user, selectedPlayer);
+                    displayPlayerAvailability(selectedPlayer);
+                    //handleSessionCreation(user, selectedPlayer);
                 } else {
                     System.out.println("Invalid player selection.");
                 }
@@ -401,6 +404,7 @@ public class Main implements Runnable {
         return index >= 0 && index < maxSize;
     }
 
+    @Deprecated
     private void handleSessionCreation(User user, User selectedPlayer) throws RemoteException {
         System.out.println("Creating session for player: " + selectedPlayer.getUsername());
 
@@ -410,7 +414,7 @@ public class Main implements Runnable {
 //        boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
 //
 //        if (paymentAccepted) {
-//            registerSession(user, selectedPlayer, date, duration);
+            registerSession(user, selectedPlayer, date, duration);
 //        } else {
 //            System.out.println("Failed to register payment.");
 //        }
@@ -511,6 +515,65 @@ public class Main implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void displayPlayerAvailability(User player) throws RemoteException {
+        int userId = player.getUserID();
+        List<Availability> availabilityList = celebrityFanService.getAvailabilityByUserID(userId);
+
+        if (availabilityList.isEmpty()) {
+            System.out.println("No availability found for this player.");
+            return;
+        }
+
+        System.out.println("Availability for " + player.getUsername() + ":");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        for (Availability availability : availabilityList) {
+            System.out.println("Date: " + availability.getAvailabilityDate() + ", Time: " +
+                    LocalTime.parse(availability.getStartTime()).format(timeFormatter) + " - " +
+                    LocalTime.parse(availability.getEndTime()).format(timeFormatter) + ", Rate: $" +
+                    availability.getRatePerHour());
+        }
+
+        System.out.println("Enter the date (YYYY/MM/DD) you want to book:");
+        String selectedDate = kyb.nextLine();
+
+        System.out.println("Enter the duration in minutes:");
+        int durationMinutes = Integer.parseInt(kyb.nextLine());
+
+        adjustStartTime(availabilityList, selectedDate, durationMinutes);
+    }
+
+    private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime adjustedStartTime = null;
+
+        for (Availability availability : availabilityList) {
+            if (availability.getAvailabilityDate().equals(selectedDate)) {
+                LocalTime startTime = LocalTime.parse(availability.getStartTime());
+                LocalTime adjustedTime = startTime.plusMinutes(durationMinutes);
+
+                if (adjustedTime.isBefore(LocalTime.parse(availability.getEndTime()))) {
+                    adjustedStartTime = adjustedTime;
+                    availability.setStartTime(adjustedStartTime.format(dateTimeFormatter));
+                } else {
+                    System.out.println("Invalid duration. The adjusted end time exceeds the original end time.");
+                    return;
+                }
+
+                if (adjustedStartTime.isAfter(LocalTime.parse(availability.getStartTime()))) {
+                    System.out.println("Adjusted start time: " + adjustedStartTime.format(dateTimeFormatter));
+                    // TODO Implement the payment process here
+                } else {
+                    System.out.println("Invalid duration. The adjusted start time is before or equal to the original start time.");
+                    return;
+                }
+            }
+        }
+
+        if (adjustedStartTime == null) {
+            System.out.println("No availability found for the selected date.");
         }
     }
 
