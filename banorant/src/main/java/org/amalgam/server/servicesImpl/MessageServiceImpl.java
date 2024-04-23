@@ -32,5 +32,8 @@ public class MessageServiceImpl extends UnicastRemoteObject implements MessageSe
     @Override
     public void logout(MessageCallback messageCallback) throws RemoteException {
         users.remove(messageCallback); // removes the instance of message callback of a user
+        for(int x = 0; x<users.size();x++){
+            users.get(x).broadcastCall(messageCallback.getUser()+" has logged out");
+        }
     }
 }

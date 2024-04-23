@@ -1,5 +1,5 @@
 import org.amalgam.client.Main;
-import org.amalgam.client.messaging.MessageCallbackImpl;
+import org.amalgam.client.callbacks.MessageCallbackImpl;
 import org.amalgam.utils.services.MessageService;
 import org.junit.jupiter.api.Test;
 
