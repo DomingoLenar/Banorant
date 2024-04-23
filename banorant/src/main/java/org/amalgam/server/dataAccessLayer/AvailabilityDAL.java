@@ -44,4 +44,46 @@ public class AvailabilityDAL {
         }
         return availabilityList;
     }
+
+    public boolean createAvailability(Availability availability) {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT INTO availability(playerID, availabilityDate, startTime, endTime, ratePerHour) " +
+                             "VALUES (?, ?, ?, ?, ?)")) {
+            stmt.setInt(1, availability.getPlayerID());
+            stmt.setString(2, availability.getAvailabilityDate());
+            stmt.setString(3, availability.getStartTime());
+            stmt.setString(4, availability.getEndTime());
+            stmt.setDouble(5, availability.getRatePerHour());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateAvailability(Availability availability) {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE availability SET availabilityDate = ?, startTime = ?, endTime = ?, ratePerHour = ? " +
+                             "WHERE availabilityID = ? AND playerID = ?")) {
+            stmt.setString(1, availability.getAvailabilityDate());
+            stmt.setString(2, availability.getStartTime());
+            stmt.setString(3, availability.getEndTime());
+            stmt.setDouble(4, availability.getRatePerHour());
+            stmt.setInt(5, availability.getAvailabilityID());
+            stmt.setInt(6, availability.getPlayerID());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
 }

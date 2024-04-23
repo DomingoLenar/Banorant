@@ -154,7 +154,11 @@ public class Main implements Runnable {
                     break;
 
                 case 2:
-                    profileManagementCeleb(user);
+                    try {
+                        profileManagementCeleb(user);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
 
                 default:
@@ -300,10 +304,12 @@ public class Main implements Runnable {
 
     }
 
-    public void profileManagementCeleb(User user){
+    public void profileManagementCeleb(User user) throws RemoteException {
         System.out.println("1. View Profile");
         System.out.println("2. Update Password");
-        System.out.println("3. Delete Profile");
+        System.out.println("3. Edit Availability");
+        System.out.println("4. Create Availability");
+        System.out.println("5. Delete Profile");
 
         int profileChoice = Integer.parseInt(kyb.nextLine());
         switch (profileChoice) {
@@ -331,7 +337,12 @@ public class Main implements Runnable {
                     throw new RuntimeException(e);
                 }
                 break;
+
             case 3:
+                editAvailability (user);
+            case 4:
+                createAvailability(user);
+            case 5:
                 System.out.println("Are you sure you want to delete your profile? (Y/N)");
                 String confirm = kyb.nextLine().toLowerCase();
                 if (confirm.equals("y")) {
@@ -564,7 +575,7 @@ public class Main implements Runnable {
 
                 if (adjustedStartTime.isAfter(LocalTime.parse(availability.getStartTime()))) {
                     System.out.println("Adjusted start time: " + adjustedStartTime.format(dateTimeFormatter));
-                    // TODO Implement the payment process here
+                    // TODO Implement the payment process here please sir
                 } else {
                     System.out.println("Invalid duration. The adjusted start time is before or equal to the original start time.");
                     return;
@@ -577,4 +588,48 @@ public class Main implements Runnable {
         }
     }
 
+    private void createAvailability(User user) throws RemoteException {
+        System.out.println("Enter schedule details:");
+        System.out.println("Availability Date (YYYY-MM-DD):");
+        String availabilityDate = kyb.nextLine();
+        System.out.println("Start Time (HH:MM:SS):");
+        String startTime = kyb.nextLine();
+        System.out.println("End Time (HH:MM:SS):");
+        String endTime = kyb.nextLine();
+        System.out.println("Rate Per Hour:");
+        double ratePerHour = Double.parseDouble(kyb.nextLine());
+
+        Availability availability = new Availability(0, user.getUserID(), availabilityDate, startTime, endTime, ratePerHour);
+        boolean created = celebrityFanService.createAvailability(availability);
+
+        if (created) {
+            System.out.println("Schedule created successfully.");
+        } else {
+            System.out.println("Failed to create availability.");
+        }
+    }
+
+    private void editAvailability(User user) throws RemoteException {
+        System.out.println("Enter availability ID to edit:");
+        int availabilityID = Integer.parseInt(kyb.nextLine());
+
+        System.out.println("Enter new availability details:");
+        System.out.println("Availability Date (YYYY-MM-DD):");
+        String availabilityDate = kyb.nextLine();
+        System.out.println("Start Time (HH:MM:SS):");
+        String startTime = kyb.nextLine();
+        System.out.println("End Time (HH:MM:SS):");
+        String endTime = kyb.nextLine();
+        System.out.println("Rate Per Hour:");
+        double ratePerHour = Double.parseDouble(kyb.nextLine());
+
+        Availability availability = new Availability(availabilityID, user.getUserID(), availabilityDate, startTime, endTime, ratePerHour);
+        boolean updated = celebrityFanService.updateAvailability(availability);
+
+        if (updated) {
+            System.out.println("Availability updated successfully.");
+        } else {
+            System.out.println("Failed to update availability.");
+        }
+    }
 }
