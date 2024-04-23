@@ -2,6 +2,7 @@ package org.amalgam.server.dataAccessLayer;
 
 import org.amalgam.utils.models.User;
 
+import java.security.InvalidParameterException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -72,6 +73,22 @@ public class UserDAL {
             throw new RuntimeException(e);
         }
         return players;
+    }
+
+    public boolean deleteUser(int id, String username) throws InvalidParameterException {
+        try(Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE ? = ?");
+            if(username!=null){
+                stmt.setString(1, "username");
+                stmt.setString(2, username);
+            } else if (id>0){
+                stmt.setString(1, "user_id");
+                stmt.setInt(2, id);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
 

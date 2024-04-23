@@ -522,7 +522,7 @@ public class Main implements Runnable {
                     if (input.equalsIgnoreCase("exit")) {
                         messageService.logout(messageCallback);
                     } else {
-                        messageService.broadcast(messageCallback, input);
+                        messageService.broadcast(messageCallback, messageCallback.getUser() + " has left the chat");
                     }
                 }
             } catch (InterruptedException e) {

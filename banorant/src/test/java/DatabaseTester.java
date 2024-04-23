@@ -4,7 +4,8 @@ import org.amalgam.utils.models.Session;
 import org.amalgam.utils.models.User;
 import org.amalgam.utils.services.AuthenticationService;
 import org.amalgam.utils.services.UserService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

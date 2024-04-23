@@ -1,4 +1,4 @@
-package org.amalgam.utils.services;
+package org.amalgam.server.servicesImpl;
 
 import org.amalgam.utils.services.MessageCallback;
 import org.amalgam.utils.services.MessageService;

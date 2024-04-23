@@ -1,7 +1,8 @@
 import org.amalgam.client.Main;
 import org.amalgam.client.messaging.MessageCallbackImpl;
 import org.amalgam.utils.services.MessageService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
