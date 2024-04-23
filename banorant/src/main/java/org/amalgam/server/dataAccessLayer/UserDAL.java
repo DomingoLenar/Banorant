@@ -10,22 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAL {
+
     public User authenticateUser(String username, String password) {
         try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE username = ? AND password = ?")) {
             stmt.setString(1, username);
             stmt.setString(2, password);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // User found, construct and return a User object
-                    int userId = rs.getInt("user_id");
+                    int userId = rs.getInt("userID");
                     String fetchedUsername = rs.getString("username");
                     String fetchedPassword = rs.getString("password");
                     boolean isCelebrity = rs.getBoolean("isCelebrity");
-                    // You can retrieve other user information similarly from the ResultSet
                     return new User(userId, fetchedUsername, fetchedPassword, isCelebrity);
                 } else {
-                    // User not found, return null
                     return null;
                 }
             }
@@ -37,14 +35,12 @@ public class UserDAL {
 
     public int getUserIdByUsername(String username) {
         try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT user_id FROM users WHERE username = ?")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT userID FROM user WHERE username = ?")) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // User found, return the user ID
-                    return rs.getInt("user_id");
+                    return rs.getInt("userID");
                 } else {
-                    // User not found, return -1
                     return -1;
                 }
             }
@@ -54,14 +50,14 @@ public class UserDAL {
         }
     }
 
-    public List<User> getPlayers() { // fetch list of players -> fan menu
+    public List<User> getPlayers() {
         List<User> players = new ArrayList<>();
-        try (Connection conn = DatabaseUtil.getConnection()){
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE isCelebrity = ?");
-            stmt.setInt(1, 1);
-            try (ResultSet rs = stmt.executeQuery()){
-                while (rs.next()){
-                    int userId = rs.getInt("user_id");
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE isCelebrity = ?")) {
+            stmt.setBoolean(1, true);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int userId = rs.getInt("userID");
                     String fetchedUsername = rs.getString("username");
                     String fetchedPassword = rs.getString("password");
                     boolean isCelebrity = rs.getBoolean("isCelebrity");
@@ -73,7 +69,4 @@ public class UserDAL {
         }
         return players;
     }
-
-
-
 }

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class PaymentDAL {
     public boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) { // payment processing is in client side but should be done by PSP third party
         try (Connection conn = DatabaseUtil.getConnection()){
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO payments (user_id, amount, status, payment_date) VALUE " +
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO payment (userID, totalAmount, status, paymentDate) VALUE " +
                     "(?,?,?,?)");
             stmt.setInt(1, fanID);
             stmt.setDouble(2, totalAmount);
@@ -25,11 +25,11 @@ public class PaymentDAL {
 
     public int getPaymentIDByUserID(int userID) {
         try (Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT payment_id FROM payments WHERE user_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT paymentID FROM payment WHERE userID = ?");
             stmt.setInt(1, userID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt("payment_id");
+                return rs.getInt("paymentID");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

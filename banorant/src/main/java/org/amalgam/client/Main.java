@@ -601,7 +601,7 @@ public class Main implements Runnable {
         System.out.println("Rate Per Hour:");
         int ratePerHour = Integer.parseInt(kyb.nextLine());
 
-        Availability availability = new Availability(0, user.getUserID(), availabilityDate, startTime, endTime, ratePerHour);
+        Availability availability = new Availability(user.getUserID(), availabilityDate, startTime, endTime, ratePerHour);
         boolean created = celebrityFanService.createAvailability(availability);
 
         if (created) {
@@ -611,9 +611,18 @@ public class Main implements Runnable {
         }
     }
 
+
     private void editAvailability(User user) throws RemoteException {
         System.out.println("Enter availability ID to edit:");
         int availabilityID = Integer.parseInt(kyb.nextLine());
+
+        Availability initialAvailability = celebrityFanService.getAvailabilityByID(availabilityID);
+        System.out.println("Details:");
+        System.out.println("Date: "+ initialAvailability.getAvailabilityDate());
+        System.out.println("Start time: "+initialAvailability.getStartTime());
+        System.out.println("End time: " + initialAvailability.getEndTime());
+        System.out.println("Rate/Hour: "+ initialAvailability.getRatePerHour()+"\n");
+
 
         System.out.println("Enter new availability details:");
         System.out.println("Availability Date (YYYY-MM-DD):");

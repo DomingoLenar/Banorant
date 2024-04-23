@@ -1,6 +1,8 @@
 package org.amalgam.utils.models;
 
-public class Availability {
+import java.io.Serializable;
+
+public class Availability implements Serializable {
 
     private int availabilityID;
     private int playerID;
@@ -26,6 +28,14 @@ public class Availability {
     }
 
     public Availability(){}
+
+    public Availability(int playerID, String availabilityDate, String startTime, String endTime, int ratePerHour) {
+        this.playerID = playerID;
+        this.availabilityDate = availabilityDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.ratePerHour = ratePerHour;
+    }
 
     public Availability(int availabilityID, int playerID, String availabilityDate, String startTime, String endTime, int ratePerHour) {
         this.availabilityID = availabilityID;

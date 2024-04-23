@@ -78,5 +78,10 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
         return availabilityDAL.updateAvailability(availability);
     }
 
+    @Override
+    public Availability getAvailabilityByID(int availabilityID) throws RemoteException {
+        return availabilityDAL.getAvailabilityByID(availabilityID);
+    }
+
 
 }

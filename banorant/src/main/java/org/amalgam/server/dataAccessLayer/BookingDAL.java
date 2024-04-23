@@ -19,7 +19,7 @@ public class BookingDAL {
         try {
             connection = DatabaseUtil.getConnection();
 
-            String query = "SELECT * FROM bookings WHERE payment_id = ?";
+            String query = "SELECT * FROM booking WHERE paymentID = ?";
             statement = connection.prepareStatement(query);
 
             statement.setInt(1, paymentID);
@@ -28,8 +28,8 @@ public class BookingDAL {
 
             while (resultSet.next()) {
                 Booking booking = new Booking();
-                booking.setAvailabilityID(resultSet.getInt("roomID"));
-                booking.setSessionID(resultSet.getInt("scheduleID"));
+                booking.setAvailabilityID(resultSet.getInt("availabilityID"));
+                booking.setSessionID(resultSet.getInt("sessionID"));
                 booking.setUserID(resultSet.getInt("userID"));
                 booking.setPaymentID(resultSet.getInt("paymentID"));
                 bookings.add(booking);
@@ -49,18 +49,18 @@ public class BookingDAL {
         return bookings;
     }
 
-    public boolean registerNewBooking(int userID, int sessionID, int roomID, int paymentID, String booking_date) {
+    public boolean registerNewBooking(int userID, int sessionID,int availabilityID, int paymentID, String booking_date) {
         Connection connection = null;
         PreparedStatement statement = null;
 
         try {
             connection = DatabaseUtil.getConnection();
 
-            String query = "INSERT INTO bookings (user_id, session_id, room_id, payment_id, booking_date) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO booking (userID, sessionID, availabilityID, paymentID, bookingDate) VALUES (?, ?, ?, ?, ?)";
             statement = connection.prepareStatement(query);
             statement.setInt(1, userID);
             statement.setInt(2, sessionID);
-            statement.setInt(3, roomID);
+            statement.setInt(3, availabilityID);
             statement.setInt(4, paymentID);
             statement.setString(5, booking_date);
 
