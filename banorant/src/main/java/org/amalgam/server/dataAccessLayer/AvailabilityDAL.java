@@ -35,7 +35,7 @@ public class AvailabilityDAL {
                     String availabilityDate = rs.getString("availabilityDate");
                     String startTime = rs.getString("startTime");
                     String endTime = rs.getString("endTime");
-                    double ratePerHour = rs.getDouble("ratePerHour");
+                    int ratePerHour = rs.getInt("ratePerHour");
                     availabilityList.add(new Availability(availabilityID, userId, availabilityDate, startTime, endTime, ratePerHour));
                 }
             }

@@ -597,7 +597,7 @@ public class Main implements Runnable {
         System.out.println("End Time (HH:MM:SS):");
         String endTime = kyb.nextLine();
         System.out.println("Rate Per Hour:");
-        double ratePerHour = Double.parseDouble(kyb.nextLine());
+        int ratePerHour = Integer.parseInt(kyb.nextLine());
 
         Availability availability = new Availability(0, user.getUserID(), availabilityDate, startTime, endTime, ratePerHour);
         boolean created = celebrityFanService.createAvailability(availability);
@@ -621,7 +621,7 @@ public class Main implements Runnable {
         System.out.println("End Time (HH:MM:SS):");
         String endTime = kyb.nextLine();
         System.out.println("Rate Per Hour:");
-        double ratePerHour = Double.parseDouble(kyb.nextLine());
+        int ratePerHour = Integer.parseInt(kyb.nextLine());
 
         Availability availability = new Availability(availabilityID, user.getUserID(), availabilityDate, startTime, endTime, ratePerHour);
         boolean updated = celebrityFanService.updateAvailability(availability);

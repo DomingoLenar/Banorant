@@ -7,7 +7,7 @@ public class Availability {
     private String availabilityDate; // Format: YYYY/MM/DD
     private String startTime; // Format: HH/MM/SS
     private String endTime; //Format: HH/MM/SS
-    private double ratePerHour;
+    private int ratePerHour;
 
     public String getStartTime() {
         return startTime;
@@ -27,7 +27,7 @@ public class Availability {
 
     public Availability(){}
 
-    public Availability(int availabilityID, int playerID, String availabilityDate, String startTime, String endTime, double ratePerHour) {
+    public Availability(int availabilityID, int playerID, String availabilityDate, String startTime, String endTime, int ratePerHour) {
         this.availabilityID = availabilityID;
         this.playerID = playerID;
         this.availabilityDate = availabilityDate;
@@ -64,7 +64,7 @@ public class Availability {
         return ratePerHour;
     }
 
-    public void setRatePerHour(double ratePerHour) {
+    public void setRatePerHour(int ratePerHour) {
         this.ratePerHour = ratePerHour;
     }
 }

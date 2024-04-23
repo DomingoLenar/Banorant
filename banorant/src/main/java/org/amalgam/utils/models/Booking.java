@@ -10,17 +10,22 @@ public class Booking implements Serializable {
     private int paymentID;
     private String bookingDate; // format of date is 'YYYY-MM-DD HH:MM:SS'
 
+    private int duration;
+
+    private String status; //Paid, Cancelled, Pending
     public Booking() {
 
     }
 
-    public Booking(int bookingID, int userID, int sessionID, int availabilityID, int paymentID, String bookingDate) {
+    public Booking(int bookingID, int userID, int sessionID, int availabilityID, int paymentID, String bookingDate, int duration, String status) {
         this.bookingID = bookingID;
         this.userID = userID;
         this.sessionID = sessionID;
         this.availabilityID = availabilityID;
         this.paymentID = paymentID;
         this.bookingDate = bookingDate;
+        this.duration = duration;
+        this.status = status;
     }
 
     public int getBookingID() {
