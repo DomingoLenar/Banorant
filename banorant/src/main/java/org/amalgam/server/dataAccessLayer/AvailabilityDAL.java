@@ -27,7 +27,7 @@ public class AvailabilityDAL {
     public List<Availability> getAvailabilityByUserID(int userId) {
         List<Availability> availabilityList = new ArrayList<>();
         try (Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM availability WHERE playerID = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM availability WHERE userID = ?");
             stmt.setInt(1, userId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -86,6 +86,25 @@ public class AvailabilityDAL {
         }
     }
 
+    public int getRateByUserID (int userID){
+        int ratePerHour = 0;
+
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM availability WHERE userID = ?")){
+             stmt.setInt(1,userID);
+
+             try (ResultSet rs = stmt.executeQuery()){
+                 if (rs.next()){
+                   ratePerHour = rs.getInt("ratePerHour");
+                 }
+             }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return ratePerHour;
+    }
 
     public Availability getAvailabilityByID(int availabilityID) {
         try (Connection conn = DatabaseUtil.getConnection();

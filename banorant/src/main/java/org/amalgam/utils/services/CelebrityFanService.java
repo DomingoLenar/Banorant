@@ -28,4 +28,6 @@ public interface CelebrityFanService extends Remote {
 
     public Availability getAvailabilityByID(int availabilityID) throws RemoteException;
 
+    public int getRateByUserID (int userID) throws  RemoteException;
+
 }

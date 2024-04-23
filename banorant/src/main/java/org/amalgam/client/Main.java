@@ -402,8 +402,8 @@ public class Main implements Runnable {
         System.out.println("List of Players:");
         for (int i = 0; i < listOfPlayers.size(); i++) {
             User player = listOfPlayers.get(i);
-//            double playerRate = celebrityFanService.getPlayerRateByPlayerID(player.getUserID());
-//            System.out.println((i + 1) + ". " + player.getUsername() + " Rate: " + playerRate);
+           double playerRate = celebrityFanService.getRateByUserID(player.getUserID());
+           System.out.println((i + 1) + ". Name:  " + player.getUsername() + " \n   Rate: " + playerRate);
         }
     }
 
