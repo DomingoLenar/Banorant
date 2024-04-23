@@ -45,10 +45,12 @@ public class AvailabilityDAL {
         return availabilityList;
     }
 
+
+
     public boolean createAvailability(Availability availability) {
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO availability(playerID, availabilityDate, startTime, endTime, ratePerHour) " +
+                     "INSERT INTO availability (userID, availabilityDate, startTime, endTime, ratePerHour) " +
                              "VALUES (?, ?, ?, ?, ?)")) {
             stmt.setInt(1, availability.getPlayerID());
             stmt.setString(2, availability.getAvailabilityDate());
@@ -68,7 +70,7 @@ public class AvailabilityDAL {
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "UPDATE availability SET availabilityDate = ?, startTime = ?, endTime = ?, ratePerHour = ? " +
-                             "WHERE availabilityID = ? AND playerID = ?")) {
+                             "WHERE availabilityID = ? AND userID = ?")) {
             stmt.setString(1, availability.getAvailabilityDate());
             stmt.setString(2, availability.getStartTime());
             stmt.setString(3, availability.getEndTime());
@@ -85,5 +87,25 @@ public class AvailabilityDAL {
     }
 
 
+    public Availability getAvailabilityByID(int availabilityID) {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM availability WHERE availabilityID = ?")) {
+            stmt.setInt(1, availabilityID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int userID = rs.getInt("userID");
+                    String availabilityDate = rs.getString("availabilityDate");
+                    String startTime = rs.getString("startTime");
+                    String endTime = rs.getString("endTime");
+                    int ratePerHour = rs.getInt("ratePerHour");
+                    return new Availability(availabilityID, userID, availabilityDate, startTime, endTime, ratePerHour);
+                } else {
+                    return null; // Return null if no availability found with the given ID
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

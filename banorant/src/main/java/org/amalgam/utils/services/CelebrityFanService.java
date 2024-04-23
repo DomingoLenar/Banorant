@@ -25,4 +25,7 @@ public interface CelebrityFanService extends Remote {
     public boolean createAvailability(Availability availability) throws RemoteException;
 
     public boolean updateAvailability(Availability availability) throws RemoteException;
+
+    public Availability getAvailabilityByID(int availabilityID) throws RemoteException;
+
 }

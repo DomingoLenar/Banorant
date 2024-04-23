@@ -79,8 +79,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-    public int getPaymentIDbyDate(String date) throws RemoteException {
-        return paymentDAL.getPaymentIDByDate(date);
+    public Availability getAvailabilityByID(int availabilityID) throws RemoteException {
+        return availabilityDAL.getAvailabilityByID(availabilityID);
     }
 
 
