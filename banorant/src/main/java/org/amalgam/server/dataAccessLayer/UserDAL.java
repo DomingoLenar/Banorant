@@ -2,6 +2,7 @@ package org.amalgam.server.dataAccessLayer;
 
 import org.amalgam.utils.models.User;
 
+import java.security.InvalidParameterException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAL {
-
     public User authenticateUser(String username, String password) {
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE username = ? AND password = ?")) {
@@ -69,4 +69,21 @@ public class UserDAL {
         }
         return players;
     }
+
+    public boolean deleteUser(int id, String username) throws InvalidParameterException {
+        try(Connection conn = DatabaseUtil.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM user WHERE ? = ?");
+            if(username!=null){
+                stmt.setString(1, "username");
+                stmt.setString(2, username);
+            } else if (id>0){
+                stmt.setString(1, "userID");
+                stmt.setInt(2, id);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
 }
