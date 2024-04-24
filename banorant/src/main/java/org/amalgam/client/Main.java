@@ -1,6 +1,7 @@
 package org.amalgam.client;
 
 import org.amalgam.client.callbacks.MessageCallbackImpl;
+import org.amalgam.server.dataAccessLayer.AvailabilityDAL;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Availability;
 import org.amalgam.utils.models.Session;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 // NOTE: -> means to be used by
@@ -367,9 +369,8 @@ public class Main implements Runnable {
         }
     }
 
-    public boolean processPayment(User user, double playerRate) {
+    public boolean processPayment(User user, int playerRate) {
         try {
-
             System.out.println("Enter the amount you will pay:");
             int paymentAmount = Integer.parseInt(kyb.nextLine());
 
@@ -378,19 +379,51 @@ public class Main implements Runnable {
                 return false;
             }
 
-            boolean paymentRegistered = celebrityFanService.registerAcceptedPayment(user.getUserID(), paymentAmount, Status.Accepted,getCurrentDateTime() );
-            if (paymentRegistered) {
-                System.out.println("Payment registered successfully.");
-                return true;
+            System.out.println("Payment is " + Status.Pending);
+            simulatePaymentProcessing();
+
+            boolean isPaymentAccepted = simulatePaymentAcceptance();
+
+            if (isPaymentAccepted) {
+                boolean paymentRegistered = registerPayment(user, paymentAmount, isPaymentAccepted);
+                if (paymentRegistered) {
+                    System.out.println("Payment registered successfully.");
+                    return true;
+                } else {
+                    System.out.println("Failed to register payment.");
+                    return false;
+                }
             } else {
-                System.out.println("Failed to register payment.");
+                System.out.println("Payment was rejected by the third-party provider.");
                 return false;
             }
-        } catch (NumberFormatException | RemoteException e) {
+        } catch (NumberFormatException e) {
             System.out.println("Invalid input format.");
+            return false;
+        } catch (RemoteException e) {
+            System.out.println("Error communicating with the payment service provider.");
             return false;
         }
     }
+
+
+    private void simulatePaymentProcessing() {
+        try {
+            Thread.sleep(new Random().nextInt(5000)); // Simulate delay up to 5 seconds
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private boolean simulatePaymentAcceptance() {
+        return new Random().nextBoolean();
+    }
+
+    private boolean registerPayment(User user, int amount, boolean isAccepted) throws RemoteException {
+        return celebrityFanService.registerAcceptedPayment(user.getUserID(), amount,
+                isAccepted ? Status.Accepted : Status.Rejected, getCurrentDateTime());
+    }
+
 
     public String getCurrentDateTime() {
         LocalDateTime currentDateTime = LocalDateTime.now();
