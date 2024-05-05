@@ -36,7 +36,7 @@ public class Messaging implements Runnable {
                 }
                 messageStub.broadcast(messageCallback, message);
             }
-            System.exit(0);
+            return;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

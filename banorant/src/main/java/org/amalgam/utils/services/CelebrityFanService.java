@@ -30,4 +30,6 @@ public interface CelebrityFanService extends Remote {
 
     public int getRateByUserID (int userID) throws  RemoteException;
 
+    public boolean updateStartingTime(String updatedStartTime) throws RemoteException;
+
 }

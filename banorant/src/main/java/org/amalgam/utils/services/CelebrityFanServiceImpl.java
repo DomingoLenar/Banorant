@@ -88,5 +88,10 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
         return availabilityDAL.getRateByUserID(userID);
     }
 
+    @Override
+    public boolean updateStartingTime(String updatedStartTime) throws RemoteException {
+        return availabilityDAL.updateStartingTime(updatedStartTime);
+    }
+
 
 }

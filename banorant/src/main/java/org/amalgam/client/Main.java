@@ -1,6 +1,7 @@
 package org.amalgam.client;
 
 import org.amalgam.client.callbacks.MessageCallbackImpl;
+import org.amalgam.client.messaging.Messaging;
 import org.amalgam.server.dataAccessLayer.AvailabilityDAL;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Availability;
@@ -19,6 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 // NOTE: -> means to be used by
 
@@ -229,11 +233,11 @@ public class Main implements Runnable {
 
 
     public void playersChoice(User user) {
-        System.out.println("1. View Players");
-        int playerChoice = Integer.parseInt(kyb.nextLine());
+        try {
+            System.out.println("1. View Players");
+            int playerChoice = Integer.parseInt(kyb.nextLine());
 
-        if (playerChoice == 1) {
-            try {
+            if (playerChoice == 1) {
                 List<User> listOfPlayers = userService.getPlayers();
 
                 if (listOfPlayers.isEmpty()) {
@@ -247,14 +251,13 @@ public class Main implements Runnable {
 
                 if (isValidSelection(selectedPlayerIndex, listOfPlayers.size())) {
                     User selectedPlayer = listOfPlayers.get(selectedPlayerIndex);
-                    displayPlayerAvailability(selectedPlayer);
-                    //handleSessionCreation(user, selectedPlayer);
+                    displayPlayerAvailability(user,selectedPlayer);
                 } else {
                     System.out.println("Invalid player selection.");
                 }
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
             }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -449,21 +452,21 @@ public class Main implements Runnable {
         return index >= 0 && index < maxSize;
     }
 
-    @Deprecated
-    private void handleSessionCreation(User user, User selectedPlayer) throws RemoteException {
+    private void handleSessionCreation(User user, User selectedPlayer, String date, int duration) throws RemoteException {
         System.out.println("Creating session for player: " + selectedPlayer.getUsername());
 
-        String date = getDateTimeInput("Enter session date (YYYY-MM-DD-HH-MM-SS):");
-        int duration = getDurationInput("Enter session duration (in minutes):");
+//        String date = getDateTimeInput("Enter session date (YYYY-MM-DD-HH-MM-SS):");
+//        int duration = getDurationInput("Enter session duration (in minutes):");
 
-//        boolean paymentAccepted = processPayment(user, celebrityFanService.getPlayerRateByPlayerID(selectedPlayer.getUserID()));
-//
-//        if (paymentAccepted) {
+        boolean paymentAccepted = processPayment(user, celebrityFanService.getRateByUserID(selectedPlayer.getUserID()));
+
+        if (paymentAccepted) {
             registerSession(user, selectedPlayer, date, duration);
-//        } else {
-//            System.out.println("Failed to register payment.");
-//        }
+        } else {
+            System.out.println("Failed to register payment. Session booking cancelled.");
+        }
     }
+
 
     private String getDateTimeInput(String prompt) {
         System.out.println(prompt);
@@ -488,7 +491,7 @@ public class Main implements Runnable {
     }
 
     private void registerRoomAndBooking(User user, User selectedPlayer, String date) throws RemoteException {
-        System.out.println("Payment processing...");
+//        System.out.println("Payment processing...");
 
         String roomName = "meeting " + selectedPlayer.getUsername() + " " + user.getUsername();
         int paymentID = celebrityFanService.getPaymentIDByUserID(user.getUserID());
@@ -527,7 +530,7 @@ public class Main implements Runnable {
 
         String fetchedDate = selectedSession.getDate();
 
-        Thread dateCheckingThread = new Thread(() -> {
+        /*Thread dateCheckingThread = new Thread(() -> {
             boolean sessionStarted = false;
             while (!sessionStarted) {
                 if (getCurrentDateTime().equals(fetchedDate)) {
@@ -560,10 +563,13 @@ public class Main implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(new Messaging());
     }
 
-    private void displayPlayerAvailability(User player) throws RemoteException {
+    private void displayPlayerAvailability(User fan, User player) throws RemoteException {
         int userId = player.getUserID();
         List<Availability> availabilityList = celebrityFanService.getAvailabilityByUserID(userId);
 
@@ -581,16 +587,23 @@ public class Main implements Runnable {
                     availability.getRatePerHour());
         }
 
-        System.out.println("Enter the date (YYYY/MM/DD) you want to book:");
-        String selectedDate = kyb.nextLine();
+        try {
 
-        System.out.println("Enter the duration in minutes:");
-        int durationMinutes = Integer.parseInt(kyb.nextLine());
+            System.out.println("Enter the date (YYYY/MM/DD) you want to book:");
+            String selectedDate = kyb.nextLine();
 
-        adjustStartTime(availabilityList, selectedDate, durationMinutes);
+            System.out.println("Enter the duration in minutes:");
+            int durationMinutes = Integer.parseInt(kyb.nextLine());
+
+            adjustStartTime(availabilityList, selectedDate, durationMinutes);
+
+            handleSessionCreation(fan, player, selectedDate, durationMinutes);
+        } catch (Exception e){
+            System.out.println("Invalid date entered");
+        }
     }
 
-    private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes) {
+    private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes) throws RemoteException {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime adjustedStartTime = null;
 
@@ -598,7 +611,6 @@ public class Main implements Runnable {
             if (availability.getAvailabilityDate().equals(selectedDate)) {
                 LocalTime startTime = LocalTime.parse(availability.getStartTime());
                 LocalTime adjustedTime = startTime.plusMinutes(durationMinutes);
-
                 if (adjustedTime.isBefore(LocalTime.parse(availability.getEndTime()))) {
                     adjustedStartTime = adjustedTime;
                     availability.setStartTime(adjustedStartTime.format(dateTimeFormatter));
@@ -607,8 +619,10 @@ public class Main implements Runnable {
                     return;
                 }
 
-                if (adjustedStartTime.isAfter(LocalTime.parse(availability.getStartTime()))) {
+                if (adjustedStartTime.isAfter(startTime)) {
+                    System.out.println(12);
                     System.out.println("Adjusted start time: " + adjustedStartTime.format(dateTimeFormatter));
+                    celebrityFanService.updateStartingTime(adjustedStartTime.format(dateTimeFormatter));
                     // TODO Implement the payment process here please sir
                 } else {
                     System.out.println("Invalid duration. The adjusted start time is before or equal to the original start time.");

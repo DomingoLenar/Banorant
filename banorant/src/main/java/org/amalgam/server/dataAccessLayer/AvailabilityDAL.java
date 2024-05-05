@@ -66,6 +66,21 @@ public class AvailabilityDAL {
         }
     }
 
+    public boolean updateStartingTime(String updatedStartTime){
+        System.out.println(updatedStartTime);
+        try (Connection conn = DatabaseUtil.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(
+                    "UPDATE availability SET startTime = ?")
+        ){
+            stmt.setString(1, updatedStartTime);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e){}
+
+        return false;
+    }
+
     public boolean updateAvailability(Availability availability) {
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
