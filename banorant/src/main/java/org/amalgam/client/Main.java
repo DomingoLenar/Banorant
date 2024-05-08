@@ -14,9 +14,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -372,12 +374,12 @@ public class Main implements Runnable {
         }
     }
 
-    public boolean processPayment(User user, int playerRate) {
+    public boolean processPayment(User user, double computedRate) {
         try {
             System.out.println("Enter the amount you will pay:");
             int paymentAmount = Integer.parseInt(kyb.nextLine());
 
-            if (paymentAmount < playerRate) {
+            if (paymentAmount < computedRate) {
                 System.out.println("Payment amount is less than the player rate. Please pay again.");
                 return false;
             }
@@ -452,18 +454,18 @@ public class Main implements Runnable {
         return index >= 0 && index < maxSize;
     }
 
-    private void handleSessionCreation(User user, User selectedPlayer, String date, int duration) throws RemoteException {
+    private boolean handleSessionCreation(User user, User selectedPlayer, String date, int duration, double moneyToPay) throws RemoteException {
+
         System.out.println("Creating session for player: " + selectedPlayer.getUsername());
-
-//        String date = getDateTimeInput("Enter session date (YYYY-MM-DD-HH-MM-SS):");
-//        int duration = getDurationInput("Enter session duration (in minutes):");
-
-        boolean paymentAccepted = processPayment(user, celebrityFanService.getRateByUserID(selectedPlayer.getUserID()));
+        System.out.println("Money to be paid: "+ moneyToPay);
+        boolean paymentAccepted = processPayment(user, moneyToPay);
 
         if (paymentAccepted) {
             registerSession(user, selectedPlayer, date, duration);
+            return true;
         } else {
             System.out.println("Failed to register payment. Session booking cancelled.");
+            return false;
         }
     }
 
@@ -530,41 +532,6 @@ public class Main implements Runnable {
 
         String fetchedDate = selectedSession.getDate();
 
-        /*Thread dateCheckingThread = new Thread(() -> {
-            boolean sessionStarted = false;
-            while (!sessionStarted) {
-                if (getCurrentDateTime().equals(fetchedDate)) {
-                    System.out.println("Session is started");
-                    sessionStarted = true;
-                    try {
-                        messageCallback = new MessageCallbackImpl(user.getUsername());
-                        messageService.logSession(messageCallback);
-
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-        dateCheckingThread.start();
-
-        while (true) {
-            try {
-                dateCheckingThread.join();
-                while (true) {
-                    System.out.print("Type Message: ");
-                    String input = kyb.nextLine();
-                    if (input.equalsIgnoreCase("exit")) {
-                        messageService.logout(messageCallback);
-                    } else {
-                        messageService.broadcast(messageCallback, messageCallback.getUser() + " has left the chat");
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(new Messaging());
     }
@@ -588,23 +555,28 @@ public class Main implements Runnable {
         }
 
         try {
+            System.out.println("Enter the date (YYYY-MM-DD) you want to book:");
+            String selectedDateStr = kyb.nextLine();
+            LocalDate selectedDate = LocalDate.parse(selectedDateStr);
 
-            System.out.println("Enter the date (YYYY/MM/DD) you want to book:");
-            String selectedDate = kyb.nextLine();
+            // Additional validation if necessary
 
             System.out.println("Enter the duration in minutes:");
             int durationMinutes = Integer.parseInt(kyb.nextLine());
 
-            adjustStartTime(availabilityList, selectedDate, durationMinutes);
-
-            handleSessionCreation(fan, player, selectedDate, durationMinutes);
-        } catch (Exception e){
-            System.out.println("Invalid date entered");
+            adjustStartTime(availabilityList, selectedDateStr, durationMinutes, fan, player);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format entered. Please enter the date in YYYY-MM-DD format.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid duration format entered. Please enter a valid number of minutes.");
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
         }
     }
 
-    private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes) throws RemoteException {
+    private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes, User fan, User player) throws RemoteException {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime originalStartTime = null;
         LocalTime adjustedStartTime = null;
 
         for (Availability availability : availabilityList) {
@@ -622,8 +594,17 @@ public class Main implements Runnable {
                 if (adjustedStartTime.isAfter(startTime)) {
                     System.out.println(12);
                     System.out.println("Adjusted start time: " + adjustedStartTime.format(dateTimeFormatter));
-                    celebrityFanService.updateStartingTime(adjustedStartTime.format(dateTimeFormatter));
-                    // TODO Implement the payment process here please sir
+                    celebrityFanService.updateStartingTime(adjustedStartTime.format(dateTimeFormatter), availability.getAvailabilityID());
+                    double durationHours = (double) durationMinutes / 60.0; // Convert minutes to hours
+                    double moneyToPay = availability.getRatePerHour() * durationHours;
+
+                    boolean accepted = handleSessionCreation(fan, player, selectedDate, durationMinutes, moneyToPay);
+
+                    if (!accepted) {
+                        celebrityFanService.updateStartingTime(originalStartTime.format(dateTimeFormatter), availability.getAvailabilityID());
+                    }
+
+
                 } else {
                     System.out.println("Invalid duration. The adjusted start time is before or equal to the original start time.");
                     return;
@@ -635,6 +616,7 @@ public class Main implements Runnable {
             System.out.println("No availability found for the selected date.");
         }
     }
+
 
     private void createAvailability(User user) throws RemoteException {
         System.out.println("Enter schedule details:");

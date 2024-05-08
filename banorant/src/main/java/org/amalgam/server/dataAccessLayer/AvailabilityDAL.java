@@ -66,13 +66,14 @@ public class AvailabilityDAL {
         }
     }
 
-    public boolean updateStartingTime(String updatedStartTime){
+    public boolean updateStartingTime(String updatedStartTime, int availabilityID){
         System.out.println(updatedStartTime);
         try (Connection conn = DatabaseUtil.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE availability SET startTime = ?")
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE availability SET startTime = ? WHERE availabilityID = ?")
         ){
             stmt.setString(1, updatedStartTime);
+            stmt.setInt(2, availabilityID);
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
 
