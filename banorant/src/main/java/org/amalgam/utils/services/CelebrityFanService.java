@@ -11,7 +11,6 @@ import java.util.List;
 
 // todo: create methods to be used by clients
 public interface CelebrityFanService extends Remote {
-    boolean getUserCredentials(int userID) throws RemoteException;
     boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) throws RemoteException;
     List<Session> getAcceptedSession(int userID) throws RemoteException;
     boolean registerNewSession(int fanID, String date, int duration) throws RemoteException;
@@ -30,6 +29,6 @@ public interface CelebrityFanService extends Remote {
 
     public int getRateByUserID (int userID) throws  RemoteException;
 
-    public boolean updateStartingTime(String updatedStartTime) throws RemoteException;
+    public void updateStartingTime(String updatedStartTime, int availabilityID) throws RemoteException;
 
 }

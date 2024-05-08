@@ -23,10 +23,6 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
         availabilityDAL = new AvailabilityDAL();
     }
 
-    @Override
-    public boolean getUserCredentials(int userID) throws RemoteException {
-        return availabilityDAL.getUserCredentials(userID);
-    }
 
     @Override
     public boolean registerAcceptedPayment(int fanID, int totalAmount, Status status, String paymentDate) throws RemoteException {
@@ -89,8 +85,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-    public boolean updateStartingTime(String updatedStartTime) throws RemoteException {
-        return availabilityDAL.updateStartingTime(updatedStartTime);
+    public void updateStartingTime(String updatedStartTime, int availabilityID) throws RemoteException {
+        availabilityDAL.updateStartingTime(updatedStartTime, availabilityID);
     }
 
 
