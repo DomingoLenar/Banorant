@@ -1,8 +1,6 @@
 package org.amalgam.client;
 
 import org.amalgam.client.callbacks.MessageCallbackImpl;
-import org.amalgam.client.messaging.Messaging;
-import org.amalgam.server.dataAccessLayer.AvailabilityDAL;
 import org.amalgam.utils.Status;
 import org.amalgam.utils.models.Availability;
 import org.amalgam.utils.models.Session;
@@ -22,9 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+
 
 // NOTE: -> means to be used by
 
@@ -223,7 +219,7 @@ public class Main implements Runnable {
             int selectedSessionIndex = getSelectedSessionIndex(sessionList.size());
 
             if (isValidSessionSelection(selectedSessionIndex, sessionList.size())) {
-                handleSessionEntry(user, sessionList.get(selectedSessionIndex));
+                handleSessionEntry(user.getUsername(), sessionList.get(selectedSessionIndex));
             } else {
                 System.out.println("Invalid session number");
             }
@@ -265,7 +261,7 @@ public class Main implements Runnable {
 
 
     public void profileManagementFan(User user){
-        System.out.println("1. Update Profile");
+        System.out.println("1. Update Password");
         System.out.println("2. Delete Profile");
 
         int profileChoice = Integer.parseInt(kyb.nextLine());
@@ -311,25 +307,15 @@ public class Main implements Runnable {
     }
 
     public void profileManagementCeleb(User user) throws RemoteException {
-        System.out.println("1. View Profile");
-        System.out.println("2. Update Password");
-        System.out.println("3. Edit Availability");
-        System.out.println("4. Create Availability");
-        System.out.println("5. Delete Profile");
+        System.out.println("1. Update Password");
+        System.out.println("2. Edit Availability");
+        System.out.println("3. Create Availability");
+        System.out.println("4. Delete Profile");
 
         int profileChoice = Integer.parseInt(kyb.nextLine());
         switch (profileChoice) {
+
             case 1:
-
-                try {
-                    System.out.println("User profile: "+user.getUsername());
-                    celebrityFanService.getUserCredentials(user.getUserID());
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-
-                break;
-            case 2:
                 System.out.println("Enter new password:");
                 String newPassword = kyb.nextLine();
                 try {
@@ -344,13 +330,13 @@ public class Main implements Runnable {
                 }
                 break;
 
-            case 3:
+            case 2:
                 editAvailability (user);
                 break;
-            case 4:
+            case 3:
                 createAvailability(user);
                 break;
-            case 5:
+            case 4:
                 System.out.println("Are you sure you want to delete your profile? (Y/N)");
                 String confirm = kyb.nextLine().toLowerCase();
                 if (confirm.equals("y")) {
@@ -421,7 +407,7 @@ public class Main implements Runnable {
     }
 
     private boolean simulatePaymentAcceptance() {
-        return new Random().nextBoolean();
+       return new Random().nextBoolean();
     }
 
     private boolean registerPayment(User user, int amount, boolean isAccepted) throws RemoteException {
@@ -527,13 +513,35 @@ public class Main implements Runnable {
         return index >= 0 && index < maxSize;
     }
 
-    private void handleSessionEntry(User user, Session selectedSession) throws RemoteException {
+    private void handleSessionEntry(String username, Session selectedSession) throws RemoteException {
         System.out.println("You have entered the session: " + selectedSession.getSessionID());
+        getMessageStub();
+        try {
+            messageCallback = new MessageCallbackImpl(username);
+            messageService.logSession(messageCallback);
+            System.out.println("Chat Away!");
+            while(true){
+                String message = kyb.nextLine();
+                if(message.toLowerCase().equals("exit")){
+                    messageService.logout(messageCallback);
+                    break;
+                }
+                messageService.broadcast(messageCallback, message);
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        String fetchedDate = selectedSession.getDate();
-
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(new Messaging());
+    public void getMessageStub(){
+        try{
+            Registry reg = LocateRegistry.getRegistry(1099);
+            messageService = (MessageService) reg.lookup(Binder.messageService);
+        }catch(RemoteException e){
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void displayPlayerAvailability(User fan, User player) throws RemoteException {
@@ -576,22 +584,22 @@ public class Main implements Runnable {
 
     private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes, User fan, User player) throws RemoteException {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime originalStartTime = null;
         LocalTime adjustedStartTime = null;
 
         for (Availability availability : availabilityList) {
             if (availability.getAvailabilityDate().equals(selectedDate)) {
-                LocalTime startTime = LocalTime.parse(availability.getStartTime());
-                LocalTime adjustedTime = startTime.plusMinutes(durationMinutes);
-                if (adjustedTime.isBefore(LocalTime.parse(availability.getEndTime()))) {
-                    adjustedStartTime = adjustedTime;
+                LocalTime originalStartTime = LocalTime.parse(availability.getStartTime()); // Assign original start time here
+
+                LocalTime startTime = originalStartTime.plusMinutes(durationMinutes);
+                if (startTime.isBefore(LocalTime.parse(availability.getEndTime()))) {
+                    adjustedStartTime = startTime;
                     availability.setStartTime(adjustedStartTime.format(dateTimeFormatter));
                 } else {
                     System.out.println("Invalid duration. The adjusted end time exceeds the original end time.");
                     return;
                 }
 
-                if (adjustedStartTime.isAfter(startTime)) {
+                if (adjustedStartTime.isAfter(originalStartTime)) {
                     System.out.println(12);
                     System.out.println("Adjusted start time: " + adjustedStartTime.format(dateTimeFormatter));
                     celebrityFanService.updateStartingTime(adjustedStartTime.format(dateTimeFormatter), availability.getAvailabilityID());
@@ -601,10 +609,9 @@ public class Main implements Runnable {
                     boolean accepted = handleSessionCreation(fan, player, selectedDate, durationMinutes, moneyToPay);
 
                     if (!accepted) {
+                        // Revert the availability's start time to the original start time
                         celebrityFanService.updateStartingTime(originalStartTime.format(dateTimeFormatter), availability.getAvailabilityID());
                     }
-
-
                 } else {
                     System.out.println("Invalid duration. The adjusted start time is before or equal to the original start time.");
                     return;
@@ -616,6 +623,7 @@ public class Main implements Runnable {
             System.out.println("No availability found for the selected date.");
         }
     }
+
 
 
     private void createAvailability(User user) throws RemoteException {

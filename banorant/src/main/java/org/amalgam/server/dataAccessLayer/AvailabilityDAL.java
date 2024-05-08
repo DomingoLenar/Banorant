@@ -11,18 +11,6 @@ import java.util.List;
 
 // todo: create methods for accessing 'availability table' data to be used by clients
 public class AvailabilityDAL {
-    public boolean getUserCredentials(int userID) {
-
-        try (Connection conn = DatabaseUtil.getConnection()){
-            PreparedStatement stmt = conn.prepareStatement("");
-
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return false;
-    }
 
     public List<Availability> getAvailabilityByUserID(int userId) {
         List<Availability> availabilityList = new ArrayList<>();
