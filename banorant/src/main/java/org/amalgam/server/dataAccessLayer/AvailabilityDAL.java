@@ -11,18 +11,6 @@ import java.util.List;
 
 // todo: create methods for accessing 'availability table' data to be used by clients
 public class AvailabilityDAL {
-    public boolean getUserCredentials(int userID) {
-
-        try (Connection conn = DatabaseUtil.getConnection()){
-            PreparedStatement stmt = conn.prepareStatement("");
-
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return false;
-    }
 
     public List<Availability> getAvailabilityByUserID(int userId) {
         List<Availability> availabilityList = new ArrayList<>();
@@ -66,13 +54,14 @@ public class AvailabilityDAL {
         }
     }
 
-    public boolean updateStartingTime(String updatedStartTime){
+    public boolean updateStartingTime(String updatedStartTime, int availabilityID){
         System.out.println(updatedStartTime);
         try (Connection conn = DatabaseUtil.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE availability SET startTime = ?")
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE availability SET startTime = ? WHERE availabilityID = ?")
         ){
             stmt.setString(1, updatedStartTime);
+            stmt.setInt(2, availabilityID);
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
 

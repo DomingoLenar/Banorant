@@ -82,18 +82,18 @@ public class UserDAL {
      */
     public boolean deleteUser(int id, String username) throws InvalidParameterException {
         try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM user WHERE ? = ?");
-            if(username!=null){
-                stmt.setString(1, "username");
-                stmt.setString(2, username);
-            } else if (id>0){
-                stmt.setString(1, "userID");
-                stmt.setInt(2, id);
-            } else{
+            PreparedStatement stmt = null;
+            if(username != null){
+                stmt = conn.prepareStatement("DELETE FROM user WHERE username = ?");
+                stmt.setString(1, username);
+            } else if (id > 0){
+                stmt = conn.prepareStatement("DELETE FROM user WHERE userID = ?");
+                stmt.setInt(1, id);
+            } else {
                 throw new InvalidParameterException("Invalid Parameter please refer to documentation of this method");
             }
-            stmt.executeQuery();
-            return true;
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
