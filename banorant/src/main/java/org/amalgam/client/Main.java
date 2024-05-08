@@ -22,10 +22,11 @@ import java.util.Random;
 import java.util.Scanner;
 
 
-// NOTE: -> means to be used by
+/**
+ * Main class for the Amalgam client application.
+ * Implements the Runnable interface for running the client.
+ */
 
-// todo: use messaging service if fan(session) == player(session) where payment element of session and iff payment == accepted
-// todo: fix the user interaction of a fan and player
 public class Main implements Runnable {
     private UserService userService;
     private AuthenticationService authService;
@@ -34,10 +35,21 @@ public class Main implements Runnable {
     private MessageCallbackImpl messageCallback;
     private final Scanner kyb = new Scanner(System.in);
 
+    /**
+     * Main method to start the client application.
+     *
+     * @param args Command-line arguments.
+     */
+
     public static void main(String[] args) {
         Main main = new Main();
         main.run();
     }
+
+    /**
+     * Implementation of the run method from the Runnable interface.
+     * Sets up RMI services and starts the client.
+     */
 
     @Override
     public void run() {
@@ -56,6 +68,11 @@ public class Main implements Runnable {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Displays the index menu and handles user input.
+     * Allows users to login, sign in, or exit the application.
+     */
 
     private void index() throws RemoteException {
         while (true) {
@@ -80,6 +97,12 @@ public class Main implements Runnable {
             }
         }
     }
+
+    /**
+     * Handles the login process for the user.
+     * Authenticates the user with the provided credentials.
+     * Redirects to appropriate menu based on user role.
+     */
 
     private void login() throws RemoteException {
         User user = null;
@@ -111,6 +134,43 @@ public class Main implements Runnable {
 
     }
 
+    /**
+     * Handles the sign-in process for new users.
+     * Creates a new user account with provided credentials.
+     */
+
+    private void signin(){
+        String username;
+        String password;
+        boolean creation = false;
+        do {
+            System.out.println("Input username: ");
+            username = kyb.nextLine();
+            System.out.println("Input password: ");
+            password = kyb.nextLine();
+
+            if (username != null && password != null) {
+                try {
+                    creation = userService.createUser(username, password);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                System.out.println("Please input accordingly");
+            }
+        } while (username == null || password == null);
+
+        if (creation) {
+            System.out.println("Account is now created");
+        } else {
+            System.out.println("Error creating an account");
+        }
+    }
+
+    /**
+     * Displays the menu options for a fan user and handles user input.
+     */
+
     private void menuFan(User user) throws RemoteException {
         boolean loop = true;
         while (loop) {
@@ -141,6 +201,10 @@ public class Main implements Runnable {
             }
         }
     }
+
+    /**
+     * Displays the menu options for a celebrity user and handles user input.
+     */
 
     private void menuCelebrity(User user) {
         boolean loop = true;
@@ -176,34 +240,11 @@ public class Main implements Runnable {
         }
     }
 
-    private void signin(){
-        String username;
-        String password;
-        boolean creation = false;
-        do {
-            System.out.println("Input username: ");
-            username = kyb.nextLine();
-            System.out.println("Input password: ");
-            password = kyb.nextLine();
 
-            if (username != null && password != null) {
-                try {
-                    creation = userService.createUser(username, password);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                System.out.println("Please input accordingly");
-            }
-        } while (username == null || password == null);
 
-        if (creation) {
-            System.out.println("Account is now created");
-        } else {
-            System.out.println("Error creating an account");
-        }
-    }
-
+    /**
+     * Handles the session choice menu for both fan and celebrity users.
+     */
 
     public void sessionChoice(User user) {
         try {
@@ -229,6 +270,9 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Handles the players choice menu for fan users.
+     */
 
     public void playersChoice(User user) {
         try {
@@ -259,6 +303,10 @@ public class Main implements Runnable {
         }
     }
 
+
+    /**
+     * Handles the profile management menu for fan users.
+     */
 
     public void profileManagementFan(User user){
         System.out.println("1. Update Password");
@@ -305,6 +353,10 @@ public class Main implements Runnable {
 
 
     }
+
+    /**
+     * Handles the profile management menu for celebrity users.
+     */
 
     public void profileManagementCeleb(User user) throws RemoteException {
         System.out.println("1. Update Password");
@@ -360,6 +412,11 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Simulates the payment process for session booking.
+     * Prompts user to enter payment amount and simulates payment processing.
+     */
+
     public boolean processPayment(User user, double computedRate) {
         try {
             System.out.println("Enter the amount you will pay:");
@@ -397,49 +454,86 @@ public class Main implements Runnable {
         }
     }
 
-
+    /**
+     * Simulates the processing delay for payment.
+     */
     private void simulatePaymentProcessing() {
         try {
-            Thread.sleep(new Random().nextInt(5000)); // Simulate delay up to 5 seconds
+            Thread.sleep(new Random().nextInt(5000));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
+    /**
+     * Simulates the acceptance or rejection of payment.
+     */
+
     private boolean simulatePaymentAcceptance() {
        return new Random().nextBoolean();
     }
 
+    /**
+     * Registers the payment for session booking.
+     */
     private boolean registerPayment(User user, int amount, boolean isAccepted) throws RemoteException {
         return celebrityFanService.registerAcceptedPayment(user.getUserID(), amount,
                 isAccepted ? Status.Accepted : Status.Rejected, getCurrentDateTime());
     }
 
-
+    /**
+     * Gets the current date and time as a formatted string.
+     */
     public String getCurrentDateTime() {
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return currentDateTime.format(formatter);
     }
 
+    /**
+     * Displays the list of players along with their rates.
+     * @param listOfPlayers List of User objects representing players
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void displayPlayers(List<User> listOfPlayers) throws RemoteException {
         System.out.println("List of Players:");
         for (int i = 0; i < listOfPlayers.size(); i++) {
             User player = listOfPlayers.get(i);
-           double playerRate = celebrityFanService.getRateByUserID(player.getUserID());
-           System.out.println((i + 1) + ". Name:  " + player.getUsername() + " \n   Rate: " + playerRate);
+            double playerRate = celebrityFanService.getRateByUserID(player.getUserID());
+            System.out.println((i + 1) + ". Name:  " + player.getUsername() + " \n   Rate: " + playerRate);
         }
     }
 
+    /**
+     * Gets the index of the selected player.
+     * @param maxIndex Maximum index allowed for selection
+     * @return Selected player index
+     */
     private int getSelectedPlayerIndex(int maxIndex) {
         System.out.println("Enter player number to select:");
         return Integer.parseInt(kyb.nextLine()) - 1;
     }
 
+    /**
+     * Checks if the selected index is valid.
+     * @param index Index to check
+     * @param maxSize Maximum size allowed
+     * @return True if the index is valid, otherwise false
+     */
     private boolean isValidSelection(int index, int maxSize) {
         return index >= 0 && index < maxSize;
     }
 
+    /**
+     * Handles the creation of a session for a user with a selected player.
+     * @param user The user initiating the session
+     * @param selectedPlayer The player selected for the session
+     * @param date Date of the session
+     * @param duration Duration of the session in minutes
+     * @param moneyToPay Amount of money to be paid for the session
+     * @return True if the session creation is successful, otherwise false
+     * @throws RemoteException if there is a remote communication problem
+     */
     private boolean handleSessionCreation(User user, User selectedPlayer, String date, int duration, double moneyToPay) throws RemoteException {
 
         System.out.println("Creating session for player: " + selectedPlayer.getUsername());
@@ -455,47 +549,48 @@ public class Main implements Runnable {
         }
     }
 
-
+    /**
+     * Gets user input for date and time.
+     * @param prompt Prompt message for input
+     * @return User input for date and time
+     */
     private String getDateTimeInput(String prompt) {
         System.out.println(prompt);
         return kyb.nextLine();
     }
 
+    /**
+     * Gets user input for duration.
+     * @param prompt Prompt message for input
+     * @return User input for duration
+     */
     private int getDurationInput(String prompt) {
         System.out.println(prompt);
         return Integer.parseInt(kyb.nextLine());
     }
 
+    /**
+     * Registers a session for the user and the selected player.
+     * @param user The user initiating the session
+     * @param selectedPlayer The player selected for the session
+     * @param date Date of the session
+     * @param duration Duration of the session in minutes
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void registerSession(User user, User selectedPlayer, String date, int duration) throws RemoteException {
         int userID = user.getUserID();
         boolean sessionRegisteredForFan = celebrityFanService.registerNewSession(userID, date, duration);
         boolean sessionRegisteredForPlayer = celebrityFanService.registerNewSession(selectedPlayer.getUserID(), date, duration);
 
-        if (sessionRegisteredForFan && sessionRegisteredForPlayer) {
-            registerRoomAndBooking(user, selectedPlayer, date);
-        } else {
+        if (!sessionRegisteredForFan && !sessionRegisteredForPlayer) {
             System.out.println("Failed to register session.");
         }
     }
 
-    private void registerRoomAndBooking(User user, User selectedPlayer, String date) throws RemoteException {
-//        System.out.println("Payment processing...");
-
-        String roomName = "meeting " + selectedPlayer.getUsername() + " " + user.getUsername();
-        int paymentID = celebrityFanService.getPaymentIDByUserID(user.getUserID());
-
-        int sessionID = celebrityFanService.getSessionIDByUserID(user.getUserID());
-
-//        boolean registerBooking = celebrityFanService.registerNewBooking(user.getUserID(), sessionID, availabilityID, paymentID, date);
-//        if (registerBooking) {
-//            System.out.println("Booking registered successfully.");
-//        } else {
-//            System.out.println("Failed to register booking.");
-//        }
-
-    }
-
-
+    /**
+     * Displays the list of sessions.
+     * @param sessionList List of Session objects representing sessions
+     */
     private void displaySessions(List<Session> sessionList) {
         System.out.println("List of sessions");
         for (int i = 0; i < sessionList.size(); i++) {
@@ -504,15 +599,32 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Gets the index of the selected session.
+     * @param maxIndex Maximum index allowed for selection
+     * @return Selected session index
+     */
     private int getSelectedSessionIndex(int maxIndex) {
         System.out.println("Enter the session number: ");
         return Integer.parseInt(kyb.nextLine()) - 1;
     }
 
+    /**
+     * Checks if the selected session index is valid.
+     * @param index Index to check
+     * @param maxSize Maximum size allowed
+     * @return True if the index is valid, otherwise false
+     */
     private boolean isValidSessionSelection(int index, int maxSize) {
         return index >= 0 && index < maxSize;
     }
 
+    /**
+     * Handles the user's entry into a session.
+     * @param username Username of the user
+     * @param selectedSession Selected session for entry
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void handleSessionEntry(String username, Session selectedSession) throws RemoteException {
         System.out.println("You have entered the session: " + selectedSession.getSessionID());
         getMessageStub();
@@ -533,6 +645,9 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Gets the message stub for communication.
+     */
     public void getMessageStub(){
         try{
             Registry reg = LocateRegistry.getRegistry(1099);
@@ -544,6 +659,12 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Displays the availability of a player.
+     * @param fan The fan requesting the availability
+     * @param player The player whose availability is requested
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void displayPlayerAvailability(User fan, User player) throws RemoteException {
         int userId = player.getUserID();
         List<Availability> availabilityList = celebrityFanService.getAvailabilityByUserID(userId);
@@ -567,8 +688,6 @@ public class Main implements Runnable {
             String selectedDateStr = kyb.nextLine();
             LocalDate selectedDate = LocalDate.parse(selectedDateStr);
 
-            // Additional validation if necessary
-
             System.out.println("Enter the duration in minutes:");
             int durationMinutes = Integer.parseInt(kyb.nextLine());
 
@@ -582,13 +701,22 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Adjusts the start time of an availability based on the duration and checks for conflicts.
+     * @param availabilityList List of availabilities for the player
+     * @param selectedDate Selected date for the session
+     * @param durationMinutes Duration of the session in minutes
+     * @param fan The fan requesting the session
+     * @param player The player for the session
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void adjustStartTime(List<Availability> availabilityList, String selectedDate, int durationMinutes, User fan, User player) throws RemoteException {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime adjustedStartTime = null;
 
         for (Availability availability : availabilityList) {
             if (availability.getAvailabilityDate().equals(selectedDate)) {
-                LocalTime originalStartTime = LocalTime.parse(availability.getStartTime()); // Assign original start time here
+                LocalTime originalStartTime = LocalTime.parse(availability.getStartTime());
 
                 LocalTime startTime = originalStartTime.plusMinutes(durationMinutes);
                 if (startTime.isBefore(LocalTime.parse(availability.getEndTime()))) {
@@ -603,13 +731,13 @@ public class Main implements Runnable {
                     System.out.println(12);
                     System.out.println("Adjusted start time: " + adjustedStartTime.format(dateTimeFormatter));
                     celebrityFanService.updateStartingTime(adjustedStartTime.format(dateTimeFormatter), availability.getAvailabilityID());
-                    double durationHours = (double) durationMinutes / 60.0; // Convert minutes to hours
+                    double durationHours = (double) durationMinutes / 60.0;
                     double moneyToPay = availability.getRatePerHour() * durationHours;
 
                     boolean accepted = handleSessionCreation(fan, player, selectedDate, durationMinutes, moneyToPay);
 
                     if (!accepted) {
-                        // Revert the availability's start time to the original start time
+
                         celebrityFanService.updateStartingTime(originalStartTime.format(dateTimeFormatter), availability.getAvailabilityID());
                     }
                 } else {
@@ -624,8 +752,11 @@ public class Main implements Runnable {
         }
     }
 
-
-
+    /**
+     * Creates availability for a user.
+     * @param user The user for whom availability is created
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void createAvailability(User user) throws RemoteException {
         System.out.println("Enter schedule details:");
         System.out.println("Availability Date (YYYY-MM-DD):");
@@ -647,7 +778,11 @@ public class Main implements Runnable {
         }
     }
 
-
+    /**
+     * Edits the availability of a user.
+     * @param user The user whose availability is edited
+     * @throws RemoteException if there is a remote communication problem
+     */
     private void editAvailability(User user) throws RemoteException {
         System.out.println("Enter availability ID to edit:");
         int availabilityID = Integer.parseInt(kyb.nextLine());
