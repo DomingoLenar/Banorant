@@ -26,7 +26,7 @@ public class UserServiceImpl extends UnicastRemoteObject implements UserService,
     @Override
     public boolean createUser(String username, String password) throws RemoteException {
         try(Connection conn = DatabaseUtil.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO users (username, password) VALUES (?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO user (username, password) VALUES (?,?)");
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.execute();
