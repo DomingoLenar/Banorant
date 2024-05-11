@@ -50,8 +50,8 @@ public class CelebrityFanServiceImpl extends UnicastRemoteObject implements Cele
     }
 
     @Override
-        public boolean registerNewBooking(int userID, int sessionID, int roomID, int paymentID, String booking_date) throws RemoteException {
-        return bookingDAL.registerNewBooking(userID, sessionID, roomID, paymentID, booking_date);
+    public boolean registerNewBooking(int userID, int sessionID, int availabilityID, int paymentID, String booking_date, int duration, String status) throws RemoteException {
+        return false;
     }
 
     @Override

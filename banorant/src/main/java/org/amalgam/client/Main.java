@@ -539,9 +539,11 @@ public class Main implements Runnable {
         System.out.println("Creating session for player: " + selectedPlayer.getUsername());
         System.out.println("Money to be paid: "+ moneyToPay);
         boolean paymentAccepted = processPayment(user, moneyToPay);
+        String paymentStatus = "";
 
         if (paymentAccepted) {
             registerSession(user, selectedPlayer, date, duration);
+
             return true;
         } else {
             System.out.println("Failed to register payment. Session booking cancelled.");
@@ -559,15 +561,6 @@ public class Main implements Runnable {
         return kyb.nextLine();
     }
 
-    /**
-     * Gets user input for duration.
-     * @param prompt Prompt message for input
-     * @return User input for duration
-     */
-    private int getDurationInput(String prompt) {
-        System.out.println(prompt);
-        return Integer.parseInt(kyb.nextLine());
-    }
 
     /**
      * Registers a session for the user and the selected player.
@@ -577,10 +570,13 @@ public class Main implements Runnable {
      * @param duration Duration of the session in minutes
      * @throws RemoteException if there is a remote communication problem
      */
-    private void registerSession(User user, User selectedPlayer, String date, int duration) throws RemoteException {
+    private void registerSessionAndBooking(User user, User selectedPlayer, String date, int duration) throws RemoteException {
         int userID = user.getUserID();
         boolean sessionRegisteredForFan = celebrityFanService.registerNewSession(userID, date, duration);
         boolean sessionRegisteredForPlayer = celebrityFanService.registerNewSession(selectedPlayer.getUserID(), date, duration);
+
+        boolean bookingRegisteredForFan = celebrityFanService.registerNewBooking();
+        boolean bookingRegisteredForPlayer = celebrityFanService.registerNewBooking();
 
         if (!sessionRegisteredForFan && !sessionRegisteredForPlayer) {
             System.out.println("Failed to register session.");

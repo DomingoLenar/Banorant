@@ -16,7 +16,7 @@ public interface CelebrityFanService extends Remote {
     boolean registerNewSession(int fanID, String date, int duration) throws RemoteException;
     List<Booking> fetchBookingByPaymentID(int paymentID) throws RemoteException;
     int getPaymentIDByUserID(int userID) throws RemoteException;
-    boolean registerNewBooking(int userID, int sessionID, int availabilityID, int paymentID, String booking_date) throws RemoteException;
+    boolean registerNewBooking(int userID, int sessionID, int availabilityID, int paymentID, String booking_date, int duration, String status) throws RemoteException;
     public int getSessionIDByUserID (int userID) throws RemoteException;
 
     public List<Availability> getAvailabilityByUserID(int userId) throws RemoteException;

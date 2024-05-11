@@ -49,20 +49,22 @@ public class BookingDAL {
         return bookings;
     }
 
-    public boolean registerNewBooking(int userID, int sessionID,int availabilityID, int paymentID, String booking_date) {
+    public boolean registerNewBooking(int userID, int sessionID, int availabilityID, int paymentID, String booking_date, int duration, String status) {
         Connection connection = null;
         PreparedStatement statement = null;
 
         try {
             connection = DatabaseUtil.getConnection();
 
-            String query = "INSERT INTO booking (userID, sessionID, availabilityID, paymentID, bookingDate) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO booking (userID, sessionID, availabilityID, paymentID, bookingDate, duration, status) VALUES (?, ?, ?, ?, ?, ?,? )";
             statement = connection.prepareStatement(query);
             statement.setInt(1, userID);
             statement.setInt(2, sessionID);
             statement.setInt(3, availabilityID);
             statement.setInt(4, paymentID);
             statement.setString(5, booking_date);
+            statement.setInt(6,duration);
+            statement.setString(7,status);
 
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
